@@ -334,3 +334,6 @@ Movie-only MVP:
 - pack file modal rows
 - episode file modal rows
 - manage page for saved casts
+
+Thanks to @debridmediamanager for all the code!
+
