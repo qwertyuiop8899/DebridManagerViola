@@ -1,0 +1,24 @@
+{
+  "name": "dmv-debrid-manager-viola",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Standalone TorBox cast manager and personal Stremio addon for IlCorsaroViola.",
+  "main": "src/server.cjs",
+  "engines": {
+    "node": "20.x"
+  },
+  "scripts": {
+    "start": "node src/server.cjs",
+    "start:dbmanager": "node dbmanager.cjs",
+    "check": "node --check src/server.cjs && node --check src/routes.cjs && node --check src/db.cjs && node --check src/crypto.cjs && node --check src/torbox-service.cjs && node --check src/stremio-addon.cjs && node --check src/ui.cjs && node --check dbmanager.cjs"
+  },
+  "dependencies": {
+    "axios": "^1.6.2",
+    "cheerio": "^1.0.0-rc.12",
+    "compression": "^1.8.1",
+    "dotenv": "^17.2.3",
+    "express": "^4.22.1",
+    "express-session": "^1.19.0",
+    "pg": "^8.17.2"
+  }
+}
