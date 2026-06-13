@@ -145,7 +145,7 @@ async function resolveLibraryStreams(profile, parsedId, type, baseUrl, castStrea
       type,
       season: parsedId.season,
       episode: parsedId.episode
-    }, { aioMode: !!opts.aioMode }));
+    }, { aioMode: !!opts.aioMode, torrent: t }));
   }
 
   return streams;
@@ -838,8 +838,20 @@ function createRouter() {
       const aioMode = profile.aiostreams_mode === true;
 
       // (1) Existing casts.
+      const apiKey = decryptText(profile.api_key_encrypted);
+      const torrents = await getCachedLibrary(req.params.userId, apiKey).catch(() => []);
+      const byId = new Map();
+      const byHash = new Map();
+      for (const t of torrents) {
+        if (t.id) byId.set(Number(t.id) || t.id, t);
+        if (t.hash) byHash.set(String(t.hash).toLowerCase(), t);
+      }
+
       const casts = await listCastsForItem(req.params.userId, parsedId, type);
-      const castStreams = casts.map((cast) => buildStreamFromCast(baseUrl, req.params.userId, cast, { aioMode }));
+      const castStreams = casts.map((cast) => {
+        const t = byId.get(Number(cast.torrent_id) || cast.torrent_id) || byHash.get(String(cast.info_hash).toLowerCase());
+        return buildStreamFromCast(baseUrl, req.params.userId, cast, { aioMode, torrent: t });
+      });
 
       // (2) Live merge: also look up the user's TorBox library via ICVdb.
       let libStreams = [];
@@ -1299,11 +1311,28 @@ function createRouter() {
       const metasMap = new Map(); // imdb_id → meta (keeps the first occurrence to preserve order)
       const hintsByImdb = new Map(); // imdb_id → { tmdbId } for the IT-poster resolver
 
+      const apiKey = decryptText(profile.api_key_encrypted);
+      const torrents = await getCachedLibrary(req.params.userId, apiKey).catch(() => []);
+      const byId = new Map();
+      const byHash = new Map();
+      for (const t of torrents) {
+        if (t.id) byId.set(Number(t.id) || t.id, t);
+        if (t.hash) byHash.set(String(t.hash).toLowerCase(), t);
+      }
+
+      const isCompleted = (t) => {
+        if (!t) return false;
+        const state = String(t.download_state || '').toLowerCase();
+        return t.download_finished || t.cached || /completed|seeding|cached|finished|uploading/.test(state);
+      };
+
       // (a) Casts.
       let castMetas = [];
       if (wantCasts) {
         const castRows = await listCastsCatalogForUser(req.params.userId, type, castSort);
         for (const row of castRows) {
+          const t = byId.get(Number(row.torrent_id) || row.torrent_id) || byHash.get(String(row.info_hash).toLowerCase());
+          if (!t || !isCompleted(t)) continue;
           const meta = buildCatalogMeta(row);
           if (meta) {
             castMetas.push(meta);
@@ -1316,8 +1345,6 @@ function createRouter() {
       let libMetas = [];
       if (wantLibrary) {
         try {
-          const apiKey = decryptText(profile.api_key_encrypted);
-          const torrents = await getCachedLibrary(req.params.userId, apiKey);
           const hashes = torrents.map(t => String(t.hash || '').toLowerCase()).filter(Boolean);
           const icvMap = await icvDb.lookupImdbForHashes(hashes);
           const tIndex = new Map();
@@ -1330,7 +1357,7 @@ function createRouter() {
             if (type === 'series' && rowType !== 'series' && rowType !== 'anime') continue;
             if (type === 'movie' && rowType !== 'movie' && rowType !== 'other') continue;
             const t = tIndex.get(hash);
-            if (!t) continue;
+            if (!t || !isCompleted(t)) continue;
             const existing = byImdb.get(row.imdb_id);
             const candSize = Number(t.size || 0);
             const candDate = new Date(t.created_at || t.updated_at || 0).getTime();
