@@ -147,12 +147,33 @@ function buildStreamFromCast(baseUrl, userId, cast, opts = {}) {
   const sizeStr = formatBytesLite(sizeBytes);
   const quality = extractQualityLite(cleanFilename || cast.title) || 'Unknown';
 
+  const t = opts.torrent;
+  let finished = true;
+  let pct = 0;
+  let state = '';
+  let seeds = 0;
+  if (t) {
+    state = String(t.download_state || '').toLowerCase();
+    finished = t.download_finished || t.cached || /completed|seeding|cached|finished|uploading/.test(state);
+    pct = Math.round((Number(t.progress) || 0) * 100);
+    seeds = Number(t.seeds || 0);
+  }
+
+  let statusSymbol = '⚡';
+  let statusHeader = '';
+  if (!finished) {
+    statusSymbol = (pct === 0 && seeds === 0 && state === 'stalled') ? '⏳ Stallo' : `⏳ ${pct}%`;
+    statusHeader = (pct === 0 && seeds === 0 && state === 'stalled')
+      ? `⚠️ TORRENT IN STALLO (0 seeders)\n`
+      : `⏳ DOWNLOAD IN CORSO: ${pct}% (👥 ${seeds} seeders)\n`;
+  }
+
   let streamName, title;
   if (opts.aioMode && aioFmt) {
-    streamName = aioFmt.formatStreamName({ addonName: 'DMV🟣', service: 'torbox', cached: true, quality });
+    streamName = aioFmt.formatStreamName({ addonName: 'DMV🟣', service: 'torbox', cached: finished, quality });
     const epLabel = (cast.type === 'series' && cast.season && cast.episode)
       ? `S${String(cast.season).padStart(2,'0')}E${String(cast.episode).padStart(2,'0')}` : '';
-    title = aioFmt.formatStreamTitle({
+    title = statusHeader + aioFmt.formatStreamTitle({
       title: cleanFilename || 'TorBox cast',
       size: sizeStr || undefined,
       source: 'TorBox cast',
@@ -161,14 +182,14 @@ function buildStreamFromCast(baseUrl, userId, cast, opts = {}) {
     });
   } else {
     // Stream name: DMV🟣 Cast ▶️ [⚡]\n{quality} — ICV-style two lines.
-    streamName = `DMV🟣 Cast ▶️ [⚡]\n${quality}`;
+    streamName = `DMV🟣 Cast ▶️ [${statusSymbol}]\n${quality}`;
     // Title: line1 filename (🎬), line2 size+TB indicator. Mirrors ICV's single-file format.
     const titleLine1 = cleanFilename ? `🎬 ${cleanFilename}` : '🎬 TorBox cast';
     const sizeLine = sizeStr ? `💾 ${sizeStr} · 📦 TorBox` : `📦 TorBox`;
     const epLine = (cast.type === 'series' && cast.season && cast.episode)
       ? `\n📺 S${String(cast.season).padStart(2,'0')}E${String(cast.episode).padStart(2,'0')}`
       : '';
-    title = `${titleLine1}\n${sizeLine}${epLine}`;
+    title = `${statusHeader}${titleLine1}\n${sizeLine}${epLine}`;
   }
 
   const stream = {
@@ -199,12 +220,33 @@ function buildStreamFromLibrary(baseUrl, userId, match, opts = {}) {
   const sizeStr = formatBytesLite(sizeBytes);
   const quality = extractQualityLite(cleanFilename) || 'Unknown';
 
+  const t = opts.torrent;
+  let finished = true;
+  let pct = 0;
+  let state = '';
+  let seeds = 0;
+  if (t) {
+    state = String(t.download_state || '').toLowerCase();
+    finished = t.download_finished || t.cached || /completed|seeding|cached|finished|uploading/.test(state);
+    pct = Math.round((Number(t.progress) || 0) * 100);
+    seeds = Number(t.seeds || 0);
+  }
+
+  let statusSymbol = '⚡';
+  let statusHeader = '';
+  if (!finished) {
+    statusSymbol = (pct === 0 && seeds === 0 && state === 'stalled') ? '⏳ Stallo' : `⏳ ${pct}%`;
+    statusHeader = (pct === 0 && seeds === 0 && state === 'stalled')
+      ? `⚠️ TORRENT IN STALLO (0 seeders)\n`
+      : `⏳ DOWNLOAD IN CORSO: ${pct}% (👥 ${seeds} seeders)\n`;
+  }
+
   let streamName, title;
   if (opts.aioMode && aioFmt) {
-    streamName = aioFmt.formatStreamName({ addonName: 'DMV🟣', service: 'torbox', cached: true, quality });
+    streamName = aioFmt.formatStreamName({ addonName: 'DMV🟣', service: 'torbox', cached: finished, quality });
     const epLabel = (match.type === 'series' && match.season && match.episode)
       ? `S${String(match.season).padStart(2,'0')}E${String(match.episode).padStart(2,'0')}` : '';
-    title = aioFmt.formatStreamTitle({
+    title = statusHeader + aioFmt.formatStreamTitle({
       title: cleanFilename || 'TorBox library',
       size: sizeStr || undefined,
       source: 'TorBox library',
@@ -212,13 +254,13 @@ function buildStreamFromLibrary(baseUrl, userId, match, opts = {}) {
       isPack: Boolean(epLabel)
     });
   } else {
-    streamName = `DMV🟣 Libreria ▶️ [⚡]\n${quality}`;
+    streamName = `DMV🟣 Libreria ▶️ [${statusSymbol}]\n${quality}`;
     const titleLine1 = cleanFilename ? `🎬 ${cleanFilename}` : '🎬 TorBox library';
     const sizeLine = sizeStr ? `💾 ${sizeStr} · 📦 TorBox library` : `📦 TorBox library`;
     const epLine = (match.type === 'series' && match.season && match.episode)
       ? `\n📺 S${String(match.season).padStart(2,'0')}E${String(match.episode).padStart(2,'0')}`
       : '';
-    title = `${titleLine1}\n${sizeLine}${epLine}`;
+    title = `${statusHeader}${titleLine1}\n${sizeLine}${epLine}`;
   }
 
   const fileIdPart = match.fileId !== undefined && match.fileId !== null && match.fileId !== ''
