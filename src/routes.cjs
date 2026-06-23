@@ -1,6 +1,49 @@
 const express = require('express');
 const http = require('http');
 
+const R = {
+  it: {
+    waitTitle: 'TorBox sta preparando il file...',
+    waitHeading: 'TorBox sta preparando il file...',
+    waitTitleLabel: 'Titolo',
+    waitStatusLabel: 'Stato',
+    waitSeedsLabel: 'Seeds',
+    waitProgressLabel: 'Progresso',
+    waitHelp: 'Questa pagina si aggiorna ogni 10 secondi. Quando TorBox avrà i file, partirà il redirect verso lo stream.',
+    waitRetry: 'Riprova ora',
+    waitBack: 'Torna al manager',
+    profileNotFound: 'Profilo non trovato',
+    noVideoFiles: 'Nessun file video nel torrent',
+    noValidUrl: 'TorBox non ha restituito un URL valido',
+    castNotFound: 'Cast non trovato',
+    castIncomplete: 'Cast incompleto: torrent_id mancante',
+    unknown: 'sconosciuto',
+    labelCast: 'TorBox cast',
+    noVideoFound: 'Nessun file video idoneo trovato in questo torrent su TorBox.',
+    torboxDbError: 'TorBox non riesce a gestire questo torrent (errore interno DATABASE_ERROR). Riprova fra qualche minuto, oppure forza la pulizia dei cast locali.',
+  },
+  en: {
+    waitTitle: 'TorBox is preparing the file...',
+    waitHeading: 'TorBox is preparing the file...',
+    waitTitleLabel: 'Title',
+    waitStatusLabel: 'Status',
+    waitSeedsLabel: 'Seeds',
+    waitProgressLabel: 'Progress',
+    waitHelp: 'This page refreshes every 10 seconds. When TorBox has the files, it will redirect to the stream.',
+    waitRetry: 'Retry now',
+    waitBack: 'Back to manager',
+    profileNotFound: 'Profile not found',
+    noVideoFiles: 'No video files in this torrent',
+    noValidUrl: 'TorBox did not return a valid URL',
+    castNotFound: 'Cast not found',
+    castIncomplete: 'Incomplete cast: missing torrent_id',
+    unknown: 'unknown',
+    labelCast: 'TorBox cast',
+    noVideoFound: 'No suitable video file found in this torrent on TorBox.',
+    torboxDbError: 'TorBox cannot handle this torrent (internal DATABASE_ERROR). Retry in a few minutes, or force-clean local casts.',
+  }
+};
+
 const { encryptText, decryptText, createUserId, hashEmail, hashPassword, verifyPassword, generateUsername, isValidUsername, isValidPassword } = require('./crypto.cjs');
 const { validateApiKey, createTorrent, requestDownloadLink, getTorrentInfo, listMyTorrents, pickBestVideoFileId, controlTorrent } = require('./torbox-service.cjs');
 const { buildManifest, buildCatalogMeta, parseStremioId, buildStreamFromCast, buildStreamFromLibrary } = require('./stremio-addon.cjs');
@@ -145,7 +188,7 @@ async function resolveLibraryStreams(profile, parsedId, type, baseUrl, castStrea
       type,
       season: parsedId.season,
       episode: parsedId.episode
-    }, { aioMode: !!opts.aioMode, torrent: t }));
+    }, { aioMode: !!opts.aioMode, torrent: t, lang: opts.lang || 'it' }));
   }
 
   return streams;
@@ -304,13 +347,25 @@ async function enrichMetasWithItalianPosters(metas, hintsByImdb = new Map(), con
   });
 }
 
-function renderTorboxWaitPage({ title, state, seeds, progress, retryUrl, castUrl }) {
+function detectLang(req) {
+  let query = String(req.query?.lang || '').toLowerCase();
+  if (query === 'eng') query = 'en';
+  if (query === 'en' || query === 'it') return query;
+  let cookie = req.cookies?.lang;
+  if (cookie === 'eng') cookie = 'en';
+  if (cookie === 'en' || cookie === 'it') return cookie;
+  const accept = String(req.headers?.['accept-language'] || '').toLowerCase();
+  if (accept.startsWith('en')) return 'en';
+  return 'it';
+}
+
+function renderTorboxWaitPage({ title, state, seeds, progress, retryUrl, castUrl, lang = 'it' }) {
   const safe = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   return `<!doctype html>
-<html lang="it"><head>
+<html lang="${lang}"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>TorBox sta preparando il file...</title>
+<title>${R[lang].waitTitle}</title>
 <meta http-equiv="refresh" content="10">
 <style>
   body{margin:0;background:#0a0014;color:#e0e0e0;font-family:-apple-system,Segoe UI,Roboto,sans-serif;display:flex;min-height:100vh;align-items:center;justify-content:center}
@@ -324,14 +379,14 @@ function renderTorboxWaitPage({ title, state, seeds, progress, retryUrl, castUrl
   small{color:#94a3b8}
 </style></head><body>
 <div class="card">
-  <h1>TorBox sta preparando il file...</h1>
-  <div class="row"><span>Titolo</span><b>${safe(title)}</b></div>
-  <div class="row"><span>Stato</span><b>${safe(state)}</b></div>
-  <div class="row"><span>Seeds</span><b>${safe(seeds)}</b></div>
-  <div class="row"><span>Progresso</span><b>${safe(progress)}%</b></div>
+  <h1>${R[lang].waitHeading}</h1>
+  <div class="row"><span>${R[lang].waitTitleLabel}</span><b>${safe(title)}</b></div>
+  <div class="row"><span>${R[lang].waitStatusLabel}</span><b>${safe(state)}</b></div>
+  <div class="row"><span>${R[lang].waitSeedsLabel}</span><b>${safe(seeds)}</b></div>
+  <div class="row"><span>${R[lang].waitProgressLabel}</span><b>${safe(progress)}%</b></div>
   <div class="bar"><i></i></div>
-  <p><small>Questa pagina si aggiorna ogni 10 secondi. Quando TorBox avrà i file, partirà il redirect verso lo stream.</small></p>
-  <p><a href="${safe(retryUrl)}">Riprova ora</a> &middot; <a href="${safe(castUrl)}">Torna al manager</a></p>
+  <p><small>${R[lang].waitHelp}</small></p>
+  <p><a href="${safe(retryUrl)}">${R[lang].waitRetry}</a> &middot; <a href="${safe(castUrl)}">${R[lang].waitBack}</a></p>
 </div>
 </body></html>`;
 }
@@ -585,7 +640,7 @@ function createRouter() {
 
     upReq.on('error', (err) => {
       console.error('[db-proxy] upstream error:', err.message);
-      if (!res.headersSent) res.status(502).type('text').send('DB manager non raggiungibile');
+      if (!res.headersSent) res.status(502).type('text').send('DB manager unreachable');
     });
 
     if (req.readable && req.method !== 'GET' && req.method !== 'HEAD') {
@@ -802,7 +857,8 @@ function createRouter() {
       res.set('Cache-Control', 'no-store, no-cache, must-revalidate');
       return res.json(buildManifest(req.params.userId, getBaseUrl(req), profile.username, {
         catalogMode: profile.catalog_mode || 'full',
-        catalogSource: profile.catalog_source || 'both-merged'
+        catalogSource: profile.catalog_source || 'both-merged',
+        lang: detectLang(req)
       }));
     } catch (error) {
       return res.status(500).json({ error: error.message });
@@ -817,7 +873,8 @@ function createRouter() {
       if (!profile) return res.status(404).json({ error: 'Profilo TorBox non trovato' });
       res.set('Cache-Control', 'no-store, no-cache, must-revalidate');
       return res.json(buildManifest(req.params.userId, getBaseUrl(req), profile.username, {
-        catalogMode: 'off'
+        catalogMode: 'off',
+        lang: detectLang(req)
       }));
     } catch (error) {
       return res.status(500).json({ error: error.message });
@@ -836,6 +893,7 @@ function createRouter() {
       const parsedId = parseStremioId(type, req.params.id);
       const baseUrl = getBaseUrl(req);
       const aioMode = profile.aiostreams_mode === true;
+const lang = detectLang(req);
 
       // (1) Existing casts.
       const apiKey = decryptText(profile.api_key_encrypted);
@@ -850,14 +908,14 @@ function createRouter() {
       const casts = await listCastsForItem(req.params.userId, parsedId, type);
       const castStreams = casts.map((cast) => {
         const t = byId.get(Number(cast.torrent_id) || cast.torrent_id) || byHash.get(String(cast.info_hash).toLowerCase());
-        return buildStreamFromCast(baseUrl, req.params.userId, cast, { aioMode, torrent: t });
+        return buildStreamFromCast(baseUrl, req.params.userId, cast, { aioMode, torrent: t, lang });
       });
 
       // (2) Live merge: also look up the user's TorBox library via ICVdb.
       let libStreams = [];
       if (profile.include_library_streams !== false) {
         try {
-          libStreams = await resolveLibraryStreams(profile, parsedId, type, baseUrl, castStreams, { aioMode });
+          libStreams = await resolveLibraryStreams(profile, parsedId, type, baseUrl, castStreams, { aioMode, lang });
         } catch (e) {
           console.log('[STREAM] library merge error:', e.message);
         }
@@ -884,7 +942,7 @@ function createRouter() {
   router.get('/torbox/:userId/lib-play/:torrentId/:fileId', async (req, res) => {
     try {
       const profile = await getProfile(req.params.userId);
-      if (!profile) return res.status(404).send('Profilo non trovato');
+      if (!profile) return res.status(404).send(R[detectLang(req)].profileNotFound);
       const apiKey = decryptText(profile.api_key_encrypted);
       const torrentId = String(req.params.torrentId);
       let fileId = req.params.fileId;
@@ -892,16 +950,15 @@ function createRouter() {
         // pick best video file from torrent info
         const info = await getTorrentInfo(torrentId, apiKey);
         fileId = pickBestVideoFileId(info);
-        if (fileId === null || fileId === undefined) return res.status(404).send('Nessun file video nel torrent');
+        if (fileId === null || fileId === undefined) return res.status(404).send(R[detectLang(req)].noVideoFiles);
       }
       const link = await requestDownloadLink(torrentId, fileId, apiKey);
       const url = (link && (link.data || link)) || '';
       const finalUrl = typeof url === 'string' ? url : (url.url || url.data || '');
-      if (!finalUrl) return res.status(502).send('TorBox non ha restituito un URL valido');
-      return res.redirect(302, finalUrl);
+      if (!finalUrl) return res.status(502).send(R[detectLang(req)].noValidUrl);
+      return res.redirect(finalUrl);
     } catch (error) {
-      console.log('[LIB-PLAY] error:', error.message);
-      return res.status(500).send('Errore nel resolve dello stream: ' + error.message);
+      return res.status(500).send('Stream resolve error: ' + error.message);
     }
   });
 
@@ -1002,8 +1059,8 @@ function createRouter() {
         getCastForUser(req.params.userId, req.params.castId)
       ]);
 
-      if (!profile || !cast) return res.status(404).send('Cast non trovato');
-      if (!cast.torrent_id) return res.status(409).send('Cast incompleto: torrent_id mancante');
+      if (!profile || !cast) return res.status(404).send(R[detectLang(req)].castNotFound);
+      if (!cast.torrent_id) return res.status(409).send(R[detectLang(req)].castIncomplete);
 
       const cachedStream = typeof cast.stream_url === 'string' ? cast.stream_url : '';
       const cachedStreamIsValid = /^https?:\/\//i.test(cachedStream);
@@ -1027,19 +1084,19 @@ function createRouter() {
           if (i < maxAttempts - 1) await new Promise((r) => setTimeout(r, intervalMs));
         }
         if (!lastInfo || !Array.isArray(lastInfo.files) || lastInfo.files.length === 0) {
-          const state = lastInfo && lastInfo.download_state ? lastInfo.download_state : 'sconosciuto';
+          const state = lastInfo && lastInfo.download_state ? lastInfo.download_state : R[lang].unknown;
           const seeds = lastInfo && typeof lastInfo.seeds === 'number' ? lastInfo.seeds : '?';
           const progress = lastInfo && typeof lastInfo.progress === 'number' ? Math.round(lastInfo.progress * 100) : 0;
           return res.status(202).type('html').send(renderTorboxWaitPage({
-            title: cast.title || cast.filename || 'Cast TorBox',
-            state, seeds, progress,
+            title: cast.title || cast.filename || R[lang].labelCast,
+            state, seeds, progress, lang,
             retryUrl: `${getBaseUrl(req)}/torbox/${encodeURIComponent(req.params.userId)}/play/${encodeURIComponent(cast.id)}`,
             castUrl: `${getBaseUrl(req)}/`
           }));
         }
         const picked = pickBestVideoFileId(lastInfo);
         if (picked === null || picked === undefined) {
-          return res.status(409).send('Nessun file video idoneo trovato in questo torrent su TorBox.');
+          return res.status(409).send(R[lang].noVideoFound);
         }
         fileId = String(picked);
         await updateCastFileId(cast.id, fileId).catch(() => {});
@@ -1508,7 +1565,7 @@ function createRouter() {
           const isDbErr = tbError.detail === 'DATABASE_ERROR' || /database/i.test(tbError.message);
           return res.status(502).json({
             error: isDbErr
-              ? 'TorBox non riesce a gestire questo torrent (errore interno DATABASE_ERROR). Riprova fra qualche minuto, oppure forza la pulizia dei cast locali.'
+              ? R[detectLang(req)].torboxDbError
               : ('TorBox: ' + tbError.message),
             tbError,
             canForce: true
