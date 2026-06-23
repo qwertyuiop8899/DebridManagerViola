@@ -1,16 +1,62 @@
+const L = {
+  it: {
+    nameWithUser: 'DMV🟣 Cast ▶️ — ',
+    nameNoUser: 'DMV🟣 Cast ▶️',
+    castMovie: 'DMV🟣 Cast — Film',
+    castSeries: 'DMV🟣 Cast — Serie TV',
+    libMovie: 'DMV🟣 Libreria — Film',
+    libSeries: 'DMV🟣 Libreria — Serie TV',
+    mergedMovie: 'DMV🟣 TorBox Film',
+    mergedSeries: 'DMV🟣 TorBox Serie TV',
+    desc: 'Casts e libreria TorBox personali, da IlCorsaroViola — Debrid Manager Viola',
+    stalled: 'Stallo',
+    stalledHeader: 'TORRENT IN STALLO (0 seeders)',
+    downloading: 'DOWNLOAD IN CORSO: {pct}% (👥 {seeders} seeders)',
+    labelCast: 'TorBox cast',
+    streamCastName: 'DMV🟣 Cast ▶️ [{status}]\n{quality}',
+    svcCast: '📦 TorBox',
+    labelLib: 'TorBox library',
+    streamLibName: 'DMV🟣 Libreria ▶️ [{status}]\n{quality}',
+    svcLib: '📦 TorBox library',
+  },
+  en: {
+    nameWithUser: 'DMV🟣 Cast ▶️ — ',
+    nameNoUser: 'DMV🟣 Cast ▶️',
+    castMovie: 'DMV🟣 Cast — Movies',
+    castSeries: 'DMV🟣 Cast — TV Series',
+    libMovie: 'DMV🟣 Library — Movies',
+    libSeries: 'DMV🟣 Library — TV Series',
+    mergedMovie: 'DMV🟣 TorBox Movies',
+    mergedSeries: 'DMV🟣 TorBox TV Series',
+    desc: 'Personal TorBox casts and library, by IlCorsaroViola — Debrid Manager Viola',
+    stalled: 'Stalled',
+    stalledHeader: 'TORRENT STALLED (0 seeders)',
+    downloading: 'DOWNLOADING: {pct}% (👥 {seeders} seeders)',
+    labelCast: 'TorBox cast',
+    streamCastName: 'DMV🟣 Cast ▶️ [{status}]\n{quality}',
+    svcCast: '📦 TorBox',
+    labelLib: 'TorBox library',
+    streamLibName: 'DMV🟣 Library ▶️ [{status}]\n{quality}',
+    svcLib: '📦 TorBox library',
+  }
+};
+
 function normalizePositiveInteger(value) {
   const parsed = Number.parseInt(value, 10);
   return Number.isInteger(parsed) && parsed > 0 ? parsed : 0;
 }
 
 function buildManifest(userId, baseUrl, username, options = {}) {
+  let lang = options.lang || 'it';
+  if (lang === 'eng') lang = 'en';
+  if (lang !== 'it' && lang !== 'en') lang = 'it';
   const logo = baseUrl
     ? `${String(baseUrl).replace(/\/$/, '')}/logo.svg`
     : 'https://dmv.stremio-italia.eu/logo.svg';
   const safeUserId = String(userId || '').toLowerCase().replace(/[^a-z0-9]/g, '');
   const displayName = username
-    ? `DMV🟣 Cast ▶️ — ${username}`
-    : `DMV🟣 Cast ▶️`;
+    ? L[lang].nameWithUser.replace('{username}', username)
+    : L[lang].nameNoUser;
   const catalogMode = options.catalogMode || 'full';
   const includeCatalog = catalogMode !== 'off';
   const source = options.catalogSource || 'both-merged'; // 'casts' | 'library' | 'both-merged' | 'both-split'
@@ -20,25 +66,25 @@ function buildManifest(userId, baseUrl, username, options = {}) {
   if (includeCatalog) {
     if (source === 'casts') {
       catalogs = [
-        { type: 'movie', id: 'dmv-tb-movies-casts', name: 'DMV🟣 Cast — Film' },
-        { type: 'series', id: 'dmv-tb-series-casts', name: 'DMV🟣 Cast — Serie TV' }
+        { type: 'movie', id: 'dmv-tb-movies-casts', name: L[lang].castMovie },
+        { type: 'series', id: 'dmv-tb-series-casts', name: L[lang].castSeries }
       ];
     } else if (source === 'library') {
       catalogs = [
-        { type: 'movie', id: 'dmv-tb-movies-library', name: 'DMV🟣 Libreria — Film' },
-        { type: 'series', id: 'dmv-tb-series-library', name: 'DMV🟣 Libreria — Serie TV' }
+        { type: 'movie', id: 'dmv-tb-movies-library', name: L[lang].libMovie },
+        { type: 'series', id: 'dmv-tb-series-library', name: L[lang].libSeries }
       ];
     } else if (source === 'both-split') {
       catalogs = [
-        { type: 'movie', id: 'dmv-tb-movies-casts', name: 'DMV🟣 Cast — Film' },
-        { type: 'movie', id: 'dmv-tb-movies-library', name: 'DMV🟣 Libreria — Film' },
-        { type: 'series', id: 'dmv-tb-series-casts', name: 'DMV🟣 Cast — Serie TV' },
-        { type: 'series', id: 'dmv-tb-series-library', name: 'DMV🟣 Libreria — Serie TV' }
+        { type: 'movie', id: 'dmv-tb-movies-casts', name: L[lang].castMovie },
+        { type: 'movie', id: 'dmv-tb-movies-library', name: L[lang].libMovie },
+        { type: 'series', id: 'dmv-tb-series-casts', name: L[lang].castSeries },
+        { type: 'series', id: 'dmv-tb-series-library', name: L[lang].libSeries }
       ];
     } else { // both-merged (default)
       catalogs = [
-        { type: 'movie', id: 'dmv-tb-movies', name: 'DMV🟣 TorBox Film' },
-        { type: 'series', id: 'dmv-tb-series', name: 'DMV🟣 TorBox Serie TV' }
+        { type: 'movie', id: 'dmv-tb-movies', name: L[lang].mergedMovie },
+        { type: 'series', id: 'dmv-tb-series', name: L[lang].mergedSeries }
       ];
     }
   }
@@ -47,7 +93,7 @@ function buildManifest(userId, baseUrl, username, options = {}) {
     id: `org.ilcorsaroviola.dmv.cast.torbox.${safeUserId}${idSuffix}`,
     version: '0.5.0',
     name: displayName,
-    description: 'Casts e libreria TorBox personali, da IlCorsaroViola — Debrid Manager Viola',
+    description: L[lang].desc,
     logo,
     icon: logo,
     resources,
@@ -141,6 +187,9 @@ let aioFmt = null;
 try { aioFmt = require('./aiostreams-formatter.cjs'); } catch (_) { aioFmt = null; }
 
 function buildStreamFromCast(baseUrl, userId, cast, opts = {}) {
+  let lang = opts.lang || 'it';
+  if (lang === 'eng') lang = 'en';
+  if (lang !== 'it' && lang !== 'en') lang = 'it';
   const filename = cast.filename || cast.title || '';
   const cleanFilename = String(filename).split('/').pop() || filename;
   const sizeBytes = Number(cast.size) || 0;
@@ -162,10 +211,10 @@ function buildStreamFromCast(baseUrl, userId, cast, opts = {}) {
   let statusSymbol = '⚡';
   let statusHeader = '';
   if (!finished) {
-    statusSymbol = (pct === 0 && seeds === 0 && state === 'stalled') ? '⏳ Stallo' : `⏳ ${pct}%`;
+    statusSymbol = (pct === 0 && seeds === 0 && state === 'stalled') ? `⏳ ${L[lang].stalled}` : `⏳ ${pct}%`;
     statusHeader = (pct === 0 && seeds === 0 && state === 'stalled')
-      ? `⚠️ TORRENT IN STALLO (0 seeders)\n`
-      : `⏳ DOWNLOAD IN CORSO: ${pct}% (👥 ${seeds} seeders)\n`;
+      ? `⚠️ ${L[lang].stalledHeader}\n`
+      : `⏳ ${L[lang].downloading.replace('{pct}', String(pct)).replace('{seeders}', String(seeds))}\n`;
   }
 
   let streamName, title;
@@ -174,18 +223,16 @@ function buildStreamFromCast(baseUrl, userId, cast, opts = {}) {
     const epLabel = (cast.type === 'series' && cast.season && cast.episode)
       ? `S${String(cast.season).padStart(2,'0')}E${String(cast.episode).padStart(2,'0')}` : '';
     title = statusHeader + aioFmt.formatStreamTitle({
-      title: cleanFilename || 'TorBox cast',
+      title: cleanFilename || L[lang].labelCast,
       size: sizeStr || undefined,
-      source: 'TorBox cast',
+      source: L[lang].labelCast,
       episodeTitle: epLabel || undefined,
       isPack: Boolean(epLabel)
     });
   } else {
-    // Stream name: DMV🟣 Cast ▶️ [⚡]\n{quality} — ICV-style two lines.
-    streamName = `DMV🟣 Cast ▶️ [${statusSymbol}]\n${quality}`;
-    // Title: line1 filename (🎬), line2 size+TB indicator. Mirrors ICV's single-file format.
-    const titleLine1 = cleanFilename ? `🎬 ${cleanFilename}` : '🎬 TorBox cast';
-    const sizeLine = sizeStr ? `💾 ${sizeStr} · 📦 TorBox` : `📦 TorBox`;
+    streamName = L[lang].streamCastName.replace('{status}', statusSymbol).replace('{quality}', quality);
+    const titleLine1 = cleanFilename ? `🎬 ${cleanFilename}` : `🎬 ${L[lang].labelCast}`;
+    const sizeLine = sizeStr ? `💾 ${sizeStr} · ${L[lang].svcCast}` : L[lang].svcCast;
     const epLine = (cast.type === 'series' && cast.season && cast.episode)
       ? `\n📺 S${String(cast.season).padStart(2,'0')}E${String(cast.episode).padStart(2,'0')}`
       : '';
@@ -214,6 +261,9 @@ function buildStreamFromCast(baseUrl, userId, cast, opts = {}) {
 // Resolution happens lazily via /lib-play/:torrentId/:fileId (or -1 for auto).
 // `match` shape: { torrentId, infoHash, fileId, filename, size, type, season?, episode? }
 function buildStreamFromLibrary(baseUrl, userId, match, opts = {}) {
+  let lang = opts.lang || 'it';
+  if (lang === 'eng') lang = 'en';
+  if (lang !== 'it' && lang !== 'en') lang = 'it';
   const filename = match.filename || '';
   const cleanFilename = String(filename).split('/').pop() || filename;
   const sizeBytes = Number(match.size) || 0;
@@ -235,10 +285,10 @@ function buildStreamFromLibrary(baseUrl, userId, match, opts = {}) {
   let statusSymbol = '⚡';
   let statusHeader = '';
   if (!finished) {
-    statusSymbol = (pct === 0 && seeds === 0 && state === 'stalled') ? '⏳ Stallo' : `⏳ ${pct}%`;
+    statusSymbol = (pct === 0 && seeds === 0 && state === 'stalled') ? `⏳ ${L[lang].stalled}` : `⏳ ${pct}%`;
     statusHeader = (pct === 0 && seeds === 0 && state === 'stalled')
-      ? `⚠️ TORRENT IN STALLO (0 seeders)\n`
-      : `⏳ DOWNLOAD IN CORSO: ${pct}% (👥 ${seeds} seeders)\n`;
+      ? `⚠️ ${L[lang].stalledHeader}\n`
+      : `⏳ ${L[lang].downloading.replace('{pct}', String(pct)).replace('{seeders}', String(seeds))}\n`;
   }
 
   let streamName, title;
@@ -247,16 +297,16 @@ function buildStreamFromLibrary(baseUrl, userId, match, opts = {}) {
     const epLabel = (match.type === 'series' && match.season && match.episode)
       ? `S${String(match.season).padStart(2,'0')}E${String(match.episode).padStart(2,'0')}` : '';
     title = statusHeader + aioFmt.formatStreamTitle({
-      title: cleanFilename || 'TorBox library',
+      title: cleanFilename || L[lang].labelLib,
       size: sizeStr || undefined,
-      source: 'TorBox library',
+      source: L[lang].labelLib,
       episodeTitle: epLabel || undefined,
       isPack: Boolean(epLabel)
     });
   } else {
-    streamName = `DMV🟣 Libreria ▶️ [${statusSymbol}]\n${quality}`;
-    const titleLine1 = cleanFilename ? `🎬 ${cleanFilename}` : '🎬 TorBox library';
-    const sizeLine = sizeStr ? `💾 ${sizeStr} · 📦 TorBox library` : `📦 TorBox library`;
+    streamName = L[lang].streamLibName.replace('{status}', statusSymbol).replace('{quality}', quality);
+    const titleLine1 = cleanFilename ? `🎬 ${cleanFilename}` : `🎬 ${L[lang].labelLib}`;
+    const sizeLine = sizeStr ? `💾 ${sizeStr} · ${L[lang].svcLib}` : L[lang].svcLib;
     const epLine = (match.type === 'series' && match.season && match.episode)
       ? `\n📺 S${String(match.season).padStart(2,'0')}E${String(match.episode).padStart(2,'0')}`
       : '';
