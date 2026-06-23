@@ -4,7 +4,7 @@ function renderHomePage() {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>DMV Debrid Manager Viola</title>
+  <title data-i18n="ui.home.pageTitle">DMV Debrid Manager Viola</title>
   <link rel="icon" type="image/svg+xml" href="/logo.svg">
   <link rel="apple-touch-icon" href="/logo.svg">
   <meta name="theme-color" content="#a855f7">
@@ -73,8 +73,8 @@ function renderHomePage() {
     .grid-3 { width: 100%; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
 
     .tile {
-      display: flex; align-items: center; justify-content: center;
-      gap: 8px; padding: 14px 10px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 2px; padding: 14px 8px;
       border: 2px solid var(--accent);
       background: rgba(168,85,247,0.15);
       color: #f3e8ff;
@@ -84,6 +84,8 @@ function renderHomePage() {
       transition: background .15s;
       cursor: pointer;
       text-align: center;
+      overflow: hidden;
+      min-width: 0;
     }
     .tile:hover { background: rgba(168,85,247,0.28); }
     .tile.green { border-color: #34d399; background: rgba(52,211,153,0.12); color: #d1fae5; }
@@ -182,6 +184,7 @@ function renderHomePage() {
 
     @media (max-width: 480px) {
       .grid-3 { grid-template-columns: 1fr 1fr; }
+      .grid-2 { grid-template-columns: 1fr; }
       h1 { font-size: 19px; }
     }
   </style>
@@ -196,15 +199,20 @@ function renderHomePage() {
       <line x1="2" y1="20" x2="2.01" y2="20"/>
     </svg>
     <h1>DMV<span style="color:#a855f7;">🟣</span> Cast <span style="color:#a855f7;">▶️</span></h1>
-    <div class="sub">Debrid Manager Viola · cast personali su TorBox per Stremio</div>
+    <div class="sub" data-i18n="subtitle">Debrid Manager Viola · cast personali su TorBox per Stremio</div>
 
     <div class="identity-bar" id="identityBar" hidden>
       <div class="who">User: <b id="identUser"></b> · TB *<span id="identKey"></span></div>
-      <button class="btn-logout" id="btnLogout" type="button">Esci</button>
+      <button class="btn-logout" id="btnLogout" type="button" data-i18n="logout">Esci</button>
+      <div class="lang-switch" style="display:flex;align-items:center;gap:2px;margin-left:auto;">
+        <button class="lang-btn active" data-lang="it" onclick="setLang('it')" style="background:rgba(139,92,246,0.10);border:1px solid rgba(139,92,246,0.45);color:#a78bfa;padding:4px 10px;cursor:pointer;font-size:11px;font-weight:700;border-radius:6px;font-family:inherit;">ITA</button>
+        <span style="color:rgba(139,92,246,0.4);font-size:11px;font-weight:700;">/</span>
+        <button class="lang-btn" data-lang="en" onclick="setLang('en')" style="background:rgba(139,92,246,0.10);border:1px solid rgba(139,92,246,0.45);color:#a78bfa;padding:4px 10px;cursor:pointer;font-size:11px;font-weight:700;border-radius:6px;font-family:inherit;">ENG</button>
+      </div>
     </div>
 
     <div class="panel" id="authPanel" hidden>
-      <h2>🔑 Accedi</h2>
+      <h2 data-i18n="loginTitle">🔑 Accedi</h2>
       <div class="tabs" role="tablist" style="display:grid;grid-template-columns:1fr 1fr;gap:6px;background:rgba(0,0,0,0.3);padding:4px;border-radius:10px;border:1px solid var(--line);margin-bottom:14px;">
         <div class="tab" data-tab="user" role="tab" style="padding:9px 6px;text-align:center;font-size:12.5px;font-weight:700;color:var(--muted);border-radius:7px;cursor:pointer;">👤 Username + Password</div>
         <div class="tab tab-active" data-tab="key" role="tab" style="padding:9px 6px;text-align:center;font-size:12.5px;font-weight:700;color:#fff;border-radius:7px;cursor:pointer;background:linear-gradient(135deg,#7c3aed,#ec4899);">🔑 API Key</div>
@@ -216,54 +224,54 @@ function renderHomePage() {
         <label style="display:block;color:var(--muted);font-size:11.5px;text-transform:uppercase;letter-spacing:0.4px;font-weight:700;">Password
           <input id="loginPassword" type="password" autocomplete="current-password" style="margin-top:6px;width:100%;height:42px;background:rgba(0,0,0,0.35);border:1px solid var(--line);border-radius:8px;color:var(--text);padding:0 11px;font:inherit;outline:none;">
         </label>
-        <button type="submit" style="height:44px;border:0;border-radius:9px;background:linear-gradient(135deg,#7c3aed,#ec4899);color:#fff;font:inherit;font-weight:800;cursor:pointer;">Entra</button>
+        <button type="submit" data-i18n="loginSubmit" style="height:44px;border:0;border-radius:9px;background:linear-gradient(135deg,#7c3aed,#ec4899);color:#fff;font:inherit;font-weight:800;cursor:pointer;">Entra</button>
         <div class="status" id="loginUserStatus"></div>
       </form>
       <form id="loginKeyForm" data-pane="key" style="display:grid;gap:10px;">
         <label style="display:block;color:var(--muted);font-size:11.5px;text-transform:uppercase;letter-spacing:0.4px;font-weight:700;">TorBox API Key
           <input id="loginApiKey" type="password" autocomplete="off" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" style="margin-top:6px;width:100%;height:42px;background:rgba(0,0,0,0.35);border:1px solid var(--line);border-radius:8px;color:var(--text);padding:0 11px;font:inherit;outline:none;">
         </label>
-        <button type="submit" style="height:44px;border:0;border-radius:9px;background:linear-gradient(135deg,#7c3aed,#ec4899);color:#fff;font:inherit;font-weight:800;cursor:pointer;">Entra</button>
+        <button type="submit" data-i18n="loginSubmitKey" style="height:44px;border:0;border-radius:9px;background:linear-gradient(135deg,#7c3aed,#ec4899);color:#fff;font:inherit;font-weight:800;cursor:pointer;">Entra</button>
         <div class="status" id="loginKeyStatus"></div>
       </form>
-      <div style="margin-top:14px;color:var(--dim);font-size:12px;text-align:center;line-height:1.5;">
+      <div id="authHelp" style="margin-top:14px;color:var(--dim);font-size:12px;text-align:center;line-height:1.5;">
         Prima volta? Accedi con la <a href="https://torbox.app/settings?section=account" target="_blank" rel="noopener" style="color:#c084fc;font-weight:700;">TorBox API Key</a>:<br>ti verrà assegnato uno username, poi potrai impostare anche una password.
       </div>
     </div>
 
     <div class="panel" id="manifestPanel" hidden>
-      <h2>📦 Installa l'addon su Stremio</h2>
+      <h2 data-i18n="installH2">📦 Installa l'addon su Stremio</h2>
       <div class="install-variant">
-        <div class="iv-label"><span>⚡ Versione completa</span><span class="iv-tag">con cataloghi</span></div>
+        <div class="iv-label"><span data-i18n="installFull">⚡ Versione completa</span><span class="iv-tag" data-i18n="installFullTag">con cataloghi</span></div>
         <div class="iv-row">
           <input id="manifestUrlFull" readonly>
-          <button id="copyManifestFull" class="btn-mini" type="button">Copia</button>
-          <a id="installManifestFull" class="btn-mini install" href="#">Installa</a>
+          <button id="copyManifestFull" class="btn-mini" type="button" data-i18n="copy">Copia</button>
+          <a id="installManifestFull" class="btn-mini install" href="#" data-i18n="installBtn">Installa</a>
         </div>
       </div>
       <div class="install-variant alt">
-        <div class="iv-label"><span>🔇 Versione no-catalog</span><span class="iv-tag">solo stream</span></div>
+        <div class="iv-label"><span data-i18n="installNC">🔇 Versione no-catalog</span><span class="iv-tag" data-i18n="installNCTag">solo stream</span></div>
         <div class="iv-row">
           <input id="manifestUrlNC" readonly>
-          <button id="copyManifestNC" class="btn-mini" type="button">Copia</button>
-          <a id="installManifestNC" class="btn-mini install alt" href="#">Installa</a>
+          <button id="copyManifestNC" class="btn-mini" type="button" data-i18n="copyNC">Copia</button>
+          <a id="installManifestNC" class="btn-mini install alt" href="#" data-i18n="installBtnNC">Installa</a>
         </div>
       </div>
       <div class="status" id="manifestStatus"></div>
     </div>
 
     <div class="panel" id="gestisciPanel" hidden>
-      <h2>🎮 Gestisci</h2>
+      <h2 data-i18n="manageH2">🎮 Gestisci</h2>
       <div class="grid-2" id="navTiles">
-        <a class="tile" id="navCast" href="/cast" style="background:linear-gradient(135deg,rgba(168,85,247,.28),rgba(236,72,153,.20));border-color:var(--accent-2)">📡 DMV Cast <span style="display:block;font-size:10.5px;font-weight:600;color:var(--muted);margin-top:2px;">cast singolo veloce</span></a>
-        <a class="tile" id="navLibrary" href="#" style="background:linear-gradient(135deg,rgba(168,85,247,.22),rgba(124,58,237,.16));border-color:var(--accent-2)">📚 Libreria <span style="display:block;font-size:10.5px;font-weight:600;color:var(--muted);margin-top:2px;">torrent · cast salvati · auto</span></a>
-        <a class="tile" id="navCatalog" href="#" style="background:linear-gradient(135deg,rgba(124,58,237,.22),rgba(168,85,247,.14));border-color:var(--accent)">🗂️ Catalogo <span style="display:block;font-size:10.5px;font-weight:600;color:var(--muted);margin-top:2px;">modalità · sorgente · ordine</span></a>
-        <a class="tile" id="navSettings" href="#" style="background:linear-gradient(135deg,rgba(168,85,247,.18),rgba(124,58,237,.12));border-color:var(--accent)">⚙️ Impostazioni <span style="display:block;font-size:10.5px;font-weight:600;color:var(--muted);margin-top:2px;">stream · install · AIOStreams</span></a>
+        <a class="tile" id="navCast" href="/cast" style="background:linear-gradient(135deg,rgba(168,85,247,.28),rgba(236,72,153,.20));border-color:var(--accent-2)">📡 DMV Cast <span data-i18n="castSub" style="display:block;font-size:10.5px;font-weight:600;color:var(--muted);margin-top:2px;">cast singolo veloce</span></a>
+        <a class="tile" id="navLibrary" href="#" style="background:linear-gradient(135deg,rgba(168,85,247,.22),rgba(124,58,237,.16));border-color:var(--accent-2)">📚 <span data-i18n="library">Libreria</span> <span data-i18n="librarySub" style="display:block;font-size:10.5px;font-weight:600;color:var(--muted);margin-top:2px;">torrent · cast salvati · auto</span></a>
+        <a class="tile" id="navCatalog" href="#" style="background:linear-gradient(135deg,rgba(124,58,237,.22),rgba(168,85,247,.14));border-color:var(--accent)">🗂️ <span data-i18n="catalog">Catalogo</span> <span data-i18n="catalogSub" style="display:block;font-size:10.5px;font-weight:600;color:var(--muted);margin-top:2px;">modalità · sorgente · ordine</span></a>
+        <a class="tile" id="navSettings" href="#" style="background:linear-gradient(135deg,rgba(168,85,247,.18),rgba(124,58,237,.12));border-color:var(--accent)">⚙️ <span data-i18n="settings">Impostazioni</span> <span data-i18n="settingsSub" style="display:block;font-size:10.5px;font-weight:600;color:var(--muted);margin-top:2px;">stream · install · AIOStreams</span></a>
       </div>
     </div>
 
     <div class="grid-3" id="extraTiles" hidden>
-      <a class="tile blue" id="navDb" href="/db" style="grid-column:1 / -1;">🗄️ Database <span style="display:block;font-size:11px;font-weight:600;color:var(--muted);margin-top:2px;">accesso diretto</span></a>
+      <a class="tile blue" id="navDb" href="/db" style="grid-column:1 / -1;">🗄️ Database <span data-i18n="dbSub" style="display:block;font-size:11px;font-weight:600;color:var(--muted);margin-top:2px;">accesso diretto</span></a>
       <div style="grid-column:1 / -1;display:grid;grid-template-columns:1fr 1fr;gap:10px;">
         <a class="tile green" href="https://icv.stremio-italia.eu/" target="_blank" rel="noopener" style="padding:18px 14px;font-size:14px;">🎥 ICV Addon</a>
         <a class="tile amber" href="https://torbox.app/settings?section=account" target="_blank" rel="noopener" style="padding:18px 14px;font-size:14px;">🔑 TorBox API</a>
@@ -271,8 +279,8 @@ function renderHomePage() {
     </div>
 
     <div class="panel" id="credentialsPanel" hidden>
-      <h2>🔐 Credenziali</h2>
-      <p style="margin:0 0 10px;color:var(--dim);font-size:12px;">
+      <h2 data-i18n="credentialsH2">🔐 Credenziali</h2>
+      <p data-i18n="credentialsDesc" style="margin:0 0 10px;color:var(--dim);font-size:12px;">
         Assegna username e password per accedere senza l'API Key. Modificabili in qualsiasi momento.
       </p>
       <form id="credForm" style="display:grid;gap:10px;">
@@ -281,35 +289,35 @@ function renderHomePage() {
           <input id="credUsername" type="text" autocomplete="username" minlength="3" maxlength="32" pattern="[a-zA-Z0-9_.\-]{3,32}" style="margin-top:6px;width:100%;height:40px;background:rgba(0,0,0,0.35);border:1px solid var(--line);border-radius:8px;color:var(--text);padding:0 11px;font:inherit;outline:none;">
         </label>
         <label style="display:block;color:var(--muted);font-size:11.5px;text-transform:uppercase;letter-spacing:0.4px;font-weight:700;">
-          Nuova password (min 6 caratteri)
-          <input id="credPassword" type="password" autocomplete="new-password" minlength="6" maxlength="128" placeholder="Lascia vuoto per non cambiare" style="margin-top:6px;width:100%;height:40px;background:rgba(0,0,0,0.35);border:1px solid var(--line);border-radius:8px;color:var(--text);padding:0 11px;font:inherit;outline:none;">
+          <span data-i18n="newPassword">Nuova password (min 6 caratteri)</span>
+          <input id="credPassword" type="password" autocomplete="new-password" minlength="6" maxlength="128" placeholder="Lascia vuoto per non cambiare" data-i18n-ph="newPasswordPh" style="margin-top:6px;width:100%;height:40px;background:rgba(0,0,0,0.35);border:1px solid var(--line);border-radius:8px;color:var(--text);padding:0 11px;font:inherit;outline:none;">
         </label>
         <label id="credCurrentWrap" style="display:none;color:var(--muted);font-size:11.5px;text-transform:uppercase;letter-spacing:0.4px;font-weight:700;">
-          Password attuale
+          <span data-i18n="currentPassword">Password attuale</span>
           <input id="credCurrent" type="password" autocomplete="current-password" style="margin-top:6px;width:100%;height:40px;background:rgba(0,0,0,0.35);border:1px solid var(--line);border-radius:8px;color:var(--text);padding:0 11px;font:inherit;outline:none;">
         </label>
         <label id="credApiKeyWrap" style="display:none;color:var(--muted);font-size:11.5px;text-transform:uppercase;letter-spacing:0.4px;font-weight:700;">
-          Conferma con TorBox API Key (solo prima volta)
-          <input id="credApiKey" type="password" autocomplete="off" placeholder="La tua TorBox API Key" style="margin-top:6px;width:100%;height:40px;background:rgba(0,0,0,0.35);border:1px solid var(--line);border-radius:8px;color:var(--text);padding:0 11px;font:inherit;outline:none;">
+          <span data-i18n="confirmApiKey">Conferma con TorBox API Key (solo prima volta)</span>
+          <input id="credApiKey" type="password" autocomplete="off" placeholder="La tua TorBox API Key" data-i18n-ph="confirmApiKeyPh" style="margin-top:6px;width:100%;height:40px;background:rgba(0,0,0,0.35);border:1px solid var(--line);border-radius:8px;color:var(--text);padding:0 11px;font:inherit;outline:none;">
         </label>
-        <button type="submit" style="height:40px;border:0;border-radius:8px;background:linear-gradient(135deg,#7c3aed,#ec4899);color:#fff;font:inherit;font-weight:800;cursor:pointer;">Salva credenziali</button>
+        <button type="submit" data-i18n="saveCreds" style="height:40px;border:0;border-radius:8px;background:linear-gradient(135deg,#7c3aed,#ec4899);color:#fff;font:inherit;font-weight:800;cursor:pointer;">Salva credenziali</button>
         <div class="status" id="credStatus"></div>
       </form>
     </div>
 
     <div class="panel" id="castsPanel" hidden>
       <h2 style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
-        <span>🎬 Cast salvati</span>
+        <span data-i18n="savedCastsH2">🎬 Cast salvati</span>
         <span style="display:inline-flex;gap:6px;">
           <button id="refreshCasts" class="btn-mini" type="button" style="font-size:11px;padding:4px 10px;">↻</button>
-          <button id="deleteAllCasts" class="btn-mini" type="button" title="Elimina tutti i cast salvati (i torrent restano su TorBox)" style="font-size:11px;padding:4px 10px;background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.35);color:#fecaca;">🗑️ Elimina tutti</button>
+          <button id="deleteAllCasts" class="btn-mini" type="button" title="Elimina tutti i cast salvati (i torrent restano su TorBox)" data-i18n="deleteAll" style="font-size:11px;padding:4px 10px;background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.35);color:#fecaca;">🗑️ Elimina tutti</button>
         </span>
       </h2>
       <div id="savedCasts" class="cast-list"></div>
       <div class="status" id="listStatus"></div>
     </div>
 
-    <div class="footer-note">
+    <div class="footer-note" data-i18n="footerNote">
       Apri il <a href="/db" target="_blank" rel="noopener">Database Manager (sola lettura)</a> e usa "Cast TB" su un torrent per aggiungerlo qui.
     </div>
     <div class="footer-note" style="font-size:10px;opacity:0.55;margin-top:6px;">build ${new Date().toISOString().replace('T',' ').slice(0,19)} UTC</div>
@@ -318,6 +326,129 @@ function renderHomePage() {
   <div class="toast" id="toast"></div>
 
   <script>
+    const L = {
+      it: {
+        subtitle: 'Debrid Manager Viola · cast personali su TorBox per Stremio',
+        logout: 'Esci',
+        loginTitle: '🔑 Accedi',
+        loginSubmit: 'Entra', loginSubmitKey: 'Entra',
+        installH2: "📦 Installa l'addon su Stremio",
+        installFull: '⚡ Versione completa', installFullTag: 'con cataloghi',
+        copy: 'Copia', copyNC: 'Copia', installBtn: 'Installa', installBtnNC: 'Installa',
+        installNC: '🔇 Versione no-catalog', installNCTag: 'solo stream',
+        manageH2: '🎮 Gestisci',
+        castSub: 'cast singolo veloce', library: 'Libreria', librarySub: 'torrent · cast salvati · auto',
+        catalog: 'Catalogo', catalogSub: 'modalità · sorgente · ordine',
+        settings: 'Impostazioni', settingsSub: 'stream · install · AIOStreams',
+        dbSub: 'accesso diretto',
+        credentialsH2: '🔐 Credenziali',
+        credentialsDesc: "Assegna username e password per accedere senza l'API Key. Modificabili in qualsiasi momento.",
+        newPassword: 'Nuova password (min 6 caratteri)', newPasswordPh: 'Lascia vuoto per non cambiare',
+        currentPassword: 'Password attuale',
+        confirmApiKey: 'Conferma con TorBox API Key (solo prima volta)', confirmApiKeyPh: 'La tua TorBox API Key',
+        saveCreds: 'Salva credenziali',
+        savedCastsH2: '🎬 Cast salvati', deleteAll: '🗑️ Elimina tutti',
+        footerNote: 'Apri il Database Manager (sola lettura) e usa "Cast TB" su un torrent per aggiungerlo qui.',
+        noCasts: 'Nessun cast salvato.', loading: 'Caricamento...', networkError: 'Errore di rete',
+        deleteCastConfirm: 'Eliminare questo cast?', castDeleted: 'Cast eliminato',
+        deleteAllConfirm: 'Eliminare TUTTI i cast salvati?\\n\\nI torrent resteranno nella tua libreria TorBox, ma Stremio non li vedrà più come stream DMV🟣 Cast.',
+        deleting: '⏳ Elimino...', deleteError: 'Errore eliminazione', deleteErrorBulk: 'Errore eliminazione massiva',
+        castsDeleted: '🧹 {n} cast eliminati', disconnected: 'Disconnesso',
+        manifestCopied: 'copiato!', manifestCopyFail: 'Premi ⌘C / Ctrl+C per copiare', manifestNA: 'Manifest non disponibile',
+        verifying: 'Verifica in corso...', loginError: 'Errore login', loginNetError: 'Errore di rete',
+        credRequired: 'Inserisci almeno un username o una nuova password',
+        currentPwdRequired: 'Inserisci la password attuale per modificare',
+        apiKeyRequired: 'Inserisci la TorBox API Key per confermare',
+        saving: 'Salvataggio...', credsSaved: 'Credenziali salvate!', credsUpdated: 'Credenziali aggiornate',
+        credsSaveError: 'Errore salvataggio', credsSaveNetError: 'Errore di rete',
+        usernameRequired: 'Username e password obbligatori', apiKeyMissing: 'Inserisci la API Key',
+        castListError: 'Errore lista cast', castDeleteBtn: 'Elimina'
+      },
+      en: {
+        subtitle: 'Debrid Manager Viola · personal casts on TorBox for Stremio',
+        logout: 'Logout',
+        loginTitle: '🔑 Login',
+        loginSubmit: 'Log in', loginSubmitKey: 'Log in',
+        installH2: '📦 Install the addon on Stremio',
+        installFull: '⚡ Full version', installFullTag: 'with catalogs',
+        copy: 'Copy', copyNC: 'Copy', installBtn: 'Install', installBtnNC: 'Install',
+        installNC: '🔇 No-catalog version', installNCTag: 'stream only',
+        manageH2: '🎮 Manage',
+        castSub: 'quick single cast', library: 'Library', librarySub: 'torrents · saved casts · auto',
+        catalog: 'Catalog', catalogSub: 'mode · source · order',
+        settings: 'Settings', settingsSub: 'stream · install · AIOStreams',
+        dbSub: 'direct access',
+        credentialsH2: '🔐 Credentials',
+        credentialsDesc: 'Set username and password to log in without the API Key. Editable anytime.',
+        newPassword: 'New password (min 6 chars)', newPasswordPh: 'Leave empty to keep current',
+        currentPassword: 'Current password',
+        confirmApiKey: 'Confirm with TorBox API Key (first time only)', confirmApiKeyPh: 'Your TorBox API Key',
+        saveCreds: 'Save credentials',
+        savedCastsH2: '🎬 Saved casts', deleteAll: '🗑️ Delete all',
+        footerNote: 'Open the Database Manager (read-only) and use "Cast TB" on a torrent to add it here.',
+        noCasts: 'No saved casts.', loading: 'Loading...', networkError: 'Network error',
+        deleteCastConfirm: 'Delete this cast?', castDeleted: 'Cast deleted',
+        deleteAllConfirm: 'Delete ALL saved casts?\\n\\nTorrents will stay in your TorBox library, but Stremio will no longer see them as DMV🟣 Cast streams.',
+        deleting: '⏳ Deleting...', deleteError: 'Delete error', deleteErrorBulk: 'Bulk delete error',
+        castsDeleted: '🧹 {n} casts deleted', disconnected: 'Disconnected',
+        manifestCopied: 'copied!', manifestCopyFail: 'Press ⌘C / Ctrl+C to copy', manifestNA: 'Manifest not available',
+        verifying: 'Verifying...', loginError: 'Login error', loginNetError: 'Network error',
+        credRequired: 'Enter at least a username or a new password',
+        currentPwdRequired: 'Enter your current password to modify',
+        apiKeyRequired: 'Enter the TorBox API Key to confirm',
+        saving: 'Saving...', credsSaved: 'Credentials saved!', credsUpdated: 'Credentials updated',
+        credsSaveError: 'Save error', credsSaveNetError: 'Network error',
+        usernameRequired: 'Username and password required', apiKeyMissing: 'Enter the API Key',
+        castListError: 'Cast list error', castDeleteBtn: 'Delete'
+      }
+    };
+    var _lang = 'it';
+    try {
+      var stored = localStorage.getItem('icv-lang');
+      if (stored === 'en' || stored === 'eng') _lang = 'en';
+      else if (stored === 'it') _lang = 'it';
+    } catch(e) {}
+    function setLang(l) {
+      if (l === 'eng') l = 'en';
+      if (l !== 'it' && l !== 'en') l = 'it';
+      _lang = l;
+      try { localStorage.setItem('icv-lang', l); } catch(e) {}
+      document.cookie = 'lang=' + l + '; path=/; max-age=31536000; SameSite=Lax';
+      document.querySelectorAll('.lang-btn').forEach(function(b) {
+        var active = b.dataset.lang === l;
+        b.classList.toggle('active', active);
+        if (active) {
+          b.style.background = 'linear-gradient(135deg,#7c3aed,#a855f7)';
+          b.style.color = '#fff';
+          b.style.borderColor = '#a855f7';
+          b.style.boxShadow = '0 0 14px rgba(168,85,247,0.55)';
+        } else {
+          b.style.background = 'rgba(139,92,246,0.10)';
+          b.style.color = '#a78bfa';
+          b.style.borderColor = 'rgba(139,92,246,0.45)';
+          b.style.boxShadow = 'none';
+        }
+      });
+      // data-i18n: textContent
+      document.querySelectorAll('[data-i18n]').forEach(function(el) {
+        var k = el.getAttribute('data-i18n'); if (L[l][k] !== undefined) el.textContent = L[l][k];
+      });
+      // data-i18n-ph: placeholder
+      document.querySelectorAll('[data-i18n-ph]').forEach(function(el) {
+        var k = el.getAttribute('data-i18n-ph'); if (L[l][k] !== undefined) el.placeholder = L[l][k];
+      });
+      // auth help text needs innerHTML because of the link
+      var ah = document.getElementById('authHelp');
+      if (ah) ah.innerHTML = l === 'it'
+        ? 'Prima volta? Accedi con la <a href="https://torbox.app/settings?section=account" target="_blank" rel="noopener" style="color:#c084fc;font-weight:700;">TorBox API Key</a>:<br>ti verrà assegnato uno username, poi potrai impostare anche una password.'
+        : 'First time? Log in with your <a href="https://torbox.app/settings?section=account" target="_blank" rel="noopener" style="color:#c084fc;font-weight:700;">TorBox API Key</a>:<br>you will be assigned a username, then you can set a personal password.';
+      // footer note needs innerHTML for the link
+      var fn = document.querySelector('.footer-note[data-i18n="footerNote"]');
+      if (fn) fn.innerHTML = l === 'it'
+        ? 'Apri il <a href="/db" target="_blank" rel="noopener">Database Manager (sola lettura)</a> e usa "Cast TB" su un torrent per aggiungerlo qui.'
+        : 'Open the <a href="/db" target="_blank" rel="noopener">Database Manager (read-only)</a> and use "Cast TB" on a torrent to add it here.';
+    }
+    setLang(_lang);
     const $ = (id) => document.getElementById(id);
     const toast = $('toast');
     function showToast(msg, kind) {
@@ -479,7 +610,7 @@ function renderHomePage() {
       $('gestisciPanel').hidden = true;
       $('extraTiles').hidden = true;
       showAuthPanel();
-      showToast('Disconnesso', 'ok');
+      showToast(L[_lang].disconnected, 'ok');
       try { $('authPanel').scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch (_) {}
     }
 
@@ -511,7 +642,7 @@ function renderHomePage() {
       const wrap = $('savedCasts');
       wrap.innerHTML = '';
       if (!casts.length) {
-        wrap.innerHTML = '<div class="status">Nessun cast salvato.</div>';
+        wrap.innerHTML = '<div class="status">' + L[_lang].noCasts + '</div>';
         return;
       }
       casts.forEach((cast) => {
@@ -524,7 +655,7 @@ function renderHomePage() {
         const m = document.createElement('div'); m.className = 'cast-meta'; m.textContent = info.meta;
         detail.append(t, m);
         const del = document.createElement('button');
-        del.className = 'danger'; del.type = 'button'; del.textContent = 'Elimina';
+        del.className = 'danger'; del.type = 'button'; del.textContent = L[_lang].castDeleteBtn;
         del.addEventListener('click', () => deleteCast(cast.id));
         row.append(detail, del);
         wrap.append(row);
@@ -534,26 +665,26 @@ function renderHomePage() {
     async function loadCasts() {
       const userId = localStorage.getItem('dmvUserId');
       if (!userId) return;
-      setStatus($('listStatus'), 'Caricamento...');
+      setStatus($('listStatus'), L[_lang].loading);
       try {
         const r = await fetch('/torbox/' + encodeURIComponent(userId) + '/casts');
         const data = await r.json();
-        if (!r.ok) return setStatus($('listStatus'), data.error || 'Errore lista cast', false);
+        if (!r.ok) return setStatus($('listStatus'), data.error || L[_lang].castListError, false);
         renderCasts(data.casts || []);
-        setStatus($('listStatus'), data.casts && data.casts.length ? '' : 'Nessun cast salvato', undefined);
+        setStatus($('listStatus'), data.casts && data.casts.length ? '' : L[_lang].noCasts, undefined);
       } catch (e) {
-        setStatus($('listStatus'), 'Errore di rete', false);
+        setStatus($('listStatus'), L[_lang].networkError, false);
       }
     }
 
     async function deleteCast(castId) {
       const userId = localStorage.getItem('dmvUserId');
       if (!userId || !castId) return;
-      if (!confirm('Eliminare questo cast?')) return;
+      if (!confirm(L[_lang].deleteCastConfirm)) return;
       const r = await fetch('/torbox/' + encodeURIComponent(userId) + '/cast/' + encodeURIComponent(castId), { method: 'DELETE' });
       const data = await r.json();
-      if (!r.ok) return showToast(data.error || 'Errore eliminazione', 'err');
-      showToast('Cast eliminato', 'ok');
+      if (!r.ok) return showToast(data.error || L[_lang].deleteError, 'err');
+      showToast(L[_lang].castDeleted, 'ok');
       loadCasts();
     }
 
@@ -562,19 +693,19 @@ function renderHomePage() {
     $('deleteAllCasts').addEventListener('click', async () => {
       const userId = localStorage.getItem('dmvUserId');
       if (!userId) return;
-      if (!confirm('Eliminare TUTTI i cast salvati?\\n\\nI torrent resteranno nella tua libreria TorBox, ma Stremio non li vedrà più come stream DMV🟣 Cast.')) return;
+      if (!confirm(L[_lang].deleteAllConfirm)) return;
       const btn = $('deleteAllCasts');
       const orig = btn.innerHTML;
       btn.disabled = true;
-      btn.innerHTML = '⏳ Elimino...';
+      btn.innerHTML = L[_lang].deleting;
       try {
         const r = await fetch('/torbox/' + encodeURIComponent(userId) + '/casts', { method: 'DELETE' });
         const data = await r.json().catch(() => ({}));
-        if (!r.ok) { showToast(data.error || 'Errore eliminazione massiva', 'err'); return; }
-        showToast('🧹 ' + (data.removed || 0) + ' cast eliminati', 'ok');
+        if (!r.ok) { showToast(data.error || L[_lang].deleteErrorBulk, 'err'); return; }
+        showToast(L[_lang].castsDeleted.replace('{n}', data.removed || 0), 'ok');
         loadCasts();
       } catch (e) {
-        showToast('Errore di rete: ' + (e && e.message ? e.message : 'sconosciuto'), 'err');
+        showToast(L[_lang].networkError + ': ' + (e && e.message ? e.message : ''), 'err');
       } finally {
         btn.disabled = false;
         btn.innerHTML = orig;
@@ -597,7 +728,7 @@ function renderHomePage() {
     });
 
     async function inlineLogin(body, statusId) {
-      setStatus($(statusId), 'Verifica in corso...');
+      setStatus($(statusId), L[_lang].verifying);
       try {
         const r = await fetch('/auth/login', {
           method: 'POST',
@@ -605,7 +736,7 @@ function renderHomePage() {
           body: JSON.stringify(body)
         });
         const data = await r.json();
-        if (!r.ok) return setStatus($(statusId), data.error || 'Errore login', false);
+        if (!r.ok) return setStatus($(statusId), data.error || L[_lang].loginError, false);
         if (data.userId) localStorage.setItem('dmvUserId', data.userId);
         if (data.manifestUrl) localStorage.setItem('dmvManifestUrl', data.manifestUrl);
         if (data.apiKeyLast4) localStorage.setItem('dmvApiKeyLast4', data.apiKeyLast4);
@@ -616,7 +747,7 @@ function renderHomePage() {
         paintIdentity(data);
         loadCasts();
       } catch (_) {
-        setStatus($(statusId), 'Errore di rete', false);
+        setStatus($(statusId), L[_lang].loginNetError, false);
       }
     }
 
@@ -626,14 +757,14 @@ function renderHomePage() {
         username: $('loginUsername').value.trim(),
         password: $('loginPassword').value
       };
-      if (!body.username || !body.password) return setStatus($('loginUserStatus'), 'Username e password obbligatori', false);
+      if (!body.username || !body.password) return setStatus($('loginUserStatus'), L[_lang].usernameRequired, false);
       inlineLogin(body, 'loginUserStatus');
     });
 
     $('loginKeyForm').addEventListener('submit', (e) => {
       e.preventDefault();
       const body = { apiKey: $('loginApiKey').value.trim() };
-      if (!body.apiKey) return setStatus($('loginKeyStatus'), 'Inserisci la API Key', false);
+      if (!body.apiKey) return setStatus($('loginKeyStatus'), L[_lang].apiKeyMissing, false);
       inlineLogin(body, 'loginKeyStatus');
     });
 
@@ -641,15 +772,15 @@ function renderHomePage() {
       $(copyId).addEventListener('click', async () => {
         const url = $(inputId).value;
         const ok = await copyToClipboard(url);
-        if (ok) showToast(label + ' copiato!', 'ok');
+        if (ok) showToast(label + ' ' + L[_lang].manifestCopied, 'ok');
         else {
           $(inputId).focus();
           $(inputId).select();
-          showToast('Premi ⌘C / Ctrl+C per copiare', 'err');
+          showToast(L[_lang].manifestCopyFail, 'err');
         }
       });
       $(installId).addEventListener('click', (e) => {
-        if (!$(inputId).value) { e.preventDefault(); showToast('Manifest non disponibile', 'err'); }
+        if (!$(inputId).value) { e.preventDefault(); showToast(L[_lang].manifestNA, 'err'); }
       });
     }
     wireManifestVariant('manifestUrlFull', 'copyManifestFull', 'installManifestFull', 'Manifest completo');
@@ -664,16 +795,16 @@ function renderHomePage() {
       const currentPassword = $('credCurrent').value;
       const apiKey = $('credApiKey').value.trim();
       if (!username && !password) {
-        return setStatus($('credStatus'), 'Inserisci almeno un username o una nuova password', false);
+        return setStatus($('credStatus'), L[_lang].credRequired, false);
       }
       const hasPassword = currentProfile && currentProfile.hasPassword;
       if (hasPassword && !currentPassword) {
-        return setStatus($('credStatus'), 'Inserisci la password attuale per modificare', false);
+        return setStatus($('credStatus'), L[_lang].currentPwdRequired, false);
       }
       if (!hasPassword && !apiKey) {
-        return setStatus($('credStatus'), 'Inserisci la TorBox API Key per confermare', false);
+        return setStatus($('credStatus'), L[_lang].apiKeyRequired, false);
       }
-      setStatus($('credStatus'), 'Salvataggio...');
+      setStatus($('credStatus'), L[_lang].saving);
       const body = {};
       if (username) body.username = username;
       if (password) body.password = password;
@@ -686,9 +817,9 @@ function renderHomePage() {
           body: JSON.stringify(body)
         });
         const data = await r.json();
-        if (!r.ok) return setStatus($('credStatus'), data.error || 'Errore salvataggio', false);
-        setStatus($('credStatus'), 'Credenziali salvate!', true);
-        showToast('Credenziali aggiornate', 'ok');
+        if (!r.ok) return setStatus($('credStatus'), data.error || L[_lang].credsSaveError, false);
+        setStatus($('credStatus'), L[_lang].credsSaved, true);
+        showToast(L[_lang].credsUpdated, 'ok');
         $('credPassword').value = '';
         $('credCurrent').value = '';
         $('credApiKey').value = '';
@@ -696,7 +827,7 @@ function renderHomePage() {
         // Refresh from server so paintIdentity reflects hasPassword / new username.
         renderIdentity();
       } catch (_) {
-        setStatus($('credStatus'), 'Errore di rete', false);
+        setStatus($('credStatus'), L[_lang].credsSaveNetError, false);
       }
     });
 
@@ -968,7 +1099,7 @@ function renderLoginPage(returnUrl) {
       </svg>
     </div>
     <h1>DMV🟣 Cast ▶️</h1>
-    <div class="sub">Accedi con username + password oppure con la TorBox API Key</div>
+    <div class="sub" data-i18n="subtitle">Accedi con username + password oppure con la TorBox API Key</div>
 
     <div class="tabs" role="tablist">
       <div class="tab" data-tab="user" role="tab">👤 Username + Password</div>
@@ -980,23 +1111,61 @@ function renderLoginPage(returnUrl) {
       <input id="username" name="username" autocomplete="username">
       <label for="password">Password</label>
       <input id="password" name="password" type="password" autocomplete="current-password">
-      <button type="submit">Entra</button>
+      <button type="submit" data-i18n="loginSubmit">Entra</button>
       <div id="userStatus" class="status"></div>
     </form>
 
     <form id="keyForm" class="pane active">
       <label for="apikey">TorBox API Key</label>
       <input id="apikey" name="apiKey" type="password" autocomplete="off" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx">
-      <button type="submit">Entra</button>
+      <button type="submit" data-i18n="loginSubmitKey">Entra</button>
       <div id="keyStatus" class="status"></div>
     </form>
 
-    <div class="help">
+    <div class="help" id="loginHelp">
       Prima volta? Accedi con la <a href="https://torbox.app/settings?section=account" target="_blank" rel="noopener">TorBox API Key</a>:<br>
       ti verrà assegnato uno username, poi potrai impostare anche una password personale.
     </div>
   </div>
   <script>
+    const L = {
+      it: { subtitle: 'Accedi con username + password oppure con la TorBox API Key', loginSubmit: 'Entra', loginSubmitKey: 'Entra', verifying: 'Verifica in corso...', loginError: 'Errore login', networkError: 'Errore di rete', okRedirect: 'OK, reindirizzamento...', usernameRequired: 'Username e password obbligatori', apiKeyMissing: 'Inserisci la API Key', helpHtml: 'Prima volta? Accedi con la <a href="https://torbox.app/settings?section=account" target="_blank" rel="noopener">TorBox API Key</a>:<br>ti verrà assegnato uno username, poi potrai impostare anche una password personale.' },
+      en: { subtitle: 'Log in with username + password or with your TorBox API Key', loginSubmit: 'Log in', loginSubmitKey: 'Log in', verifying: 'Verifying...', loginError: 'Login error', networkError: 'Network error', okRedirect: 'OK, redirecting...', usernameRequired: 'Username and password required', apiKeyMissing: 'Enter the API Key', helpHtml: 'First time? Log in with your <a href="https://torbox.app/settings?section=account" target="_blank" rel="noopener">TorBox API Key</a>:<br>you will be assigned a username, then you can set a personal password.' }
+    };
+    var _lang = 'it';
+    try {
+      var stored = localStorage.getItem('icv-lang');
+      if (stored === 'en' || stored === 'eng') _lang = 'en';
+      else if (stored === 'it') _lang = 'it';
+    } catch(e) {}
+    function setLang(l) {
+      if (l === 'eng') l = 'en';
+      if (l !== 'it' && l !== 'en') l = 'it';
+      _lang = l;
+      try { localStorage.setItem('icv-lang', l); } catch(e) {}
+      document.cookie = 'lang=' + l + '; path=/; max-age=31536000; SameSite=Lax';
+      document.querySelectorAll('.lang-btn').forEach(function(b) {
+        var active = b.dataset.lang === l;
+        b.classList.toggle('active', active);
+        if (active) {
+          b.style.background = 'linear-gradient(135deg,#7c3aed,#a855f7)';
+          b.style.color = '#fff';
+          b.style.borderColor = '#a855f7';
+          b.style.boxShadow = '0 0 14px rgba(168,85,247,0.55)';
+        } else {
+          b.style.background = 'rgba(139,92,246,0.10)';
+          b.style.color = '#a78bfa';
+          b.style.borderColor = 'rgba(139,92,246,0.45)';
+          b.style.boxShadow = 'none';
+        }
+      });
+      document.querySelectorAll('[data-i18n]').forEach(function(el) {
+        var k = el.getAttribute('data-i18n'); if (L[l][k] !== undefined) el.textContent = L[l][k];
+      });
+      var h = document.getElementById('loginHelp');
+      if (h) h.innerHTML = L[l].helpHtml;
+    }
+    setLang(_lang);
     const RETURN_URL = ${safeReturn};
 
     function setStatus(elId, msg, ok) {
@@ -1022,7 +1191,7 @@ function renderLoginPage(returnUrl) {
     });
 
     async function postLogin(body, statusId) {
-      setStatus(statusId, 'Verifica in corso...');
+      setStatus(statusId, L[_lang].verifying);
       try {
         const r = await fetch('/auth/login', {
           method: 'POST',
@@ -1030,12 +1199,12 @@ function renderLoginPage(returnUrl) {
           body: JSON.stringify(body)
         });
         const data = await r.json();
-        if (!r.ok) return setStatus(statusId, data.error || 'Errore login', false);
+        if (!r.ok) return setStatus(statusId, data.error || L[_lang].loginError, false);
         applyLoginResponse(data);
-        setStatus(statusId, 'OK, reindirizzamento...', true);
+        setStatus(statusId, L[_lang].okRedirect, true);
         setTimeout(() => { location.href = RETURN_URL; }, 300);
       } catch (_) {
-        setStatus(statusId, 'Errore di rete', false);
+        setStatus(statusId, L[_lang].networkError, false);
       }
     }
 
@@ -1045,14 +1214,14 @@ function renderLoginPage(returnUrl) {
         username: document.getElementById('username').value.trim(),
         password: document.getElementById('password').value
       };
-      if (!body.username || !body.password) return setStatus('userStatus', 'Username e password obbligatori', false);
+      if (!body.username || !body.password) return setStatus('userStatus', L[_lang].usernameRequired, false);
       postLogin(body, 'userStatus');
     });
 
     document.getElementById('keyForm').addEventListener('submit', (e) => {
       e.preventDefault();
       const body = { apiKey: document.getElementById('apikey').value.trim() };
-      if (!body.apiKey) return setStatus('keyStatus', 'Inserisci la API Key', false);
+      if (!body.apiKey) return setStatus('keyStatus', L[_lang].apiKeyMissing, false);
       postLogin(body, 'keyStatus');
     });
   </script>
@@ -1213,17 +1382,24 @@ function renderCastPage() {
       </svg>
       <h1>DMV<span style="color:#a855f7;">🟣</span> Cast <span style="color:#a855f7;">▶️</span></h1>
     </div>
-    <div class="sub">Cast personale TorBox per Stremio</div>
+    <div class="sub" data-i18n="subtitle">Cast personale TorBox per Stremio</div>
 
     <div class="identity-bar">
       <span>User: <b id="identUser">…</b></span>
-      <a href="/" style="color:#c084fc;text-decoration:none;font-weight:700;font-size:12px;">⬅ Manager</a>
+      <span style="display:flex;align-items:center;gap:6px;">
+        <div class="lang-switch" style="display:flex;align-items:center;gap:2px;display:inline-flex;">
+          <button class="lang-btn active" data-lang="it" onclick="setLang('it')" style="background:rgba(139,92,246,0.10);border:1px solid rgba(139,92,246,0.45);color:#a78bfa;padding:4px 10px;cursor:pointer;font-size:11px;font-weight:700;border-radius:6px;font-family:inherit;">ITA</button>
+          <span style="color:rgba(139,92,246,0.4);font-size:11px;font-weight:700;">/</span>
+          <button class="lang-btn" data-lang="en" onclick="setLang('en')" style="background:rgba(139,92,246,0.10);border:1px solid rgba(139,92,246,0.45);color:#a78bfa;padding:4px 10px;cursor:pointer;font-size:11px;font-weight:700;border-radius:6px;font-family:inherit;">ENG</button>
+        </div>
+        <a href="/" data-i18n="backManager" style="color:#c084fc;text-decoration:none;font-weight:700;font-size:12px;">⬅ Manager</a>
+      </span>
     </div>
 
     <!-- LOGIN MODE: shown when no dmvUserId in localStorage -->
     <div class="panel" id="loginNotice" hidden>
-      <h2>🔐 Login richiesto</h2>
-      <p style="margin:6px 0 12px;color:var(--muted);font-size:13.5px;line-height:1.5;">
+      <h2 data-i18n="loginRequired">🔐 Login richiesto</h2>
+      <p data-i18n="loginText" style="margin:6px 0 12px;color:var(--muted);font-size:13.5px;line-height:1.5;">
         Per cercare e castare titoli devi prima fare login.
       </p>
       <div style="display:flex;gap:6px;margin-bottom:10px;">
@@ -1233,25 +1409,25 @@ function renderCastPage() {
       <form id="loginUserForm" style="display:grid;gap:8px;">
         <input id="liUser" type="text" placeholder="Username" autocomplete="username" style="height:38px;padding:0 12px;border-radius:9px;border:1px solid var(--line);background:rgba(10,0,20,0.5);color:var(--text);font:inherit;font-size:13.5px;">
         <input id="liPass" type="password" placeholder="Password" autocomplete="current-password" style="height:38px;padding:0 12px;border-radius:9px;border:1px solid var(--line);background:rgba(10,0,20,0.5);color:var(--text);font:inherit;font-size:13.5px;">
-        <button type="submit" class="cast-btn" style="height:44px;font-size:14px;">Accedi</button>
+        <button type="submit" class="cast-btn" data-i18n="loginSubmit" style="height:44px;font-size:14px;">Accedi</button>
       </form>
       <form id="loginKeyForm" style="display:none;gap:8px;">
         <input id="liKey" type="password" placeholder="TorBox API key" autocomplete="off" style="height:38px;padding:0 12px;border-radius:9px;border:1px solid var(--line);background:rgba(10,0,20,0.5);color:var(--text);font:inherit;font-size:13.5px;">
-        <button type="submit" class="cast-btn" style="height:44px;font-size:14px;">Accedi con API key</button>
+        <button type="submit" class="cast-btn" data-i18n="loginSubmitKey" style="height:44px;font-size:14px;">Accedi con API key</button>
       </form>
       <div class="status" id="loginStatus" style="margin-top:8px;text-align:left;"></div>
-      <div style="margin-top:10px;font-size:11.5px;color:var(--dim);text-align:center;">
+      <div id="castLoginHelp" style="margin-top:10px;font-size:11.5px;color:var(--dim);text-align:center;">
         Oppure <a href="/" style="color:#c084fc;font-weight:700;">vai al manager completo</a>.
       </div>
     </div>
 
     <!-- SEARCH MODE: when no full params, user can search the ICV torrent DB -->
     <div class="panel" id="searchPanel" hidden>
-      <h2>🔎 Cerca nel database</h2>
+      <h2 data-i18n="searchH2">🔎 Cerca nel database</h2>
       <form id="searchForm" autocomplete="off">
         <div class="search-row">
           <input id="sQuery" type="text" placeholder="Titolo, tt0000000, hash, magnet…" />
-          <button type="submit">Cerca</button>
+          <button type="submit" data-i18n="searchBtn">Cerca</button>
         </div>
         <div class="filters">
           <select id="sType">
@@ -1288,23 +1464,139 @@ function renderCastPage() {
       </div>
 
       <div class="panel">
-        <button id="castBtn" class="cast-btn" type="button">📡 Cast su TorBox</button>
+        <button id="castBtn" class="cast-btn" type="button" data-i18n="castBtn">📡 Cast su TorBox</button>
         <div id="castStatus" class="status"></div>
       </div>
 
       <div class="links" id="castLinks" hidden>
-        <a id="manifestLink" class="install" href="#" target="_blank" rel="noopener">📦 Installa addon Stremio</a>
-        <a href="/cast">↩ Nuova ricerca</a>
-        <a href="/">↩ Torna al manager</a>
+        <a id="manifestLink" class="install" href="#" target="_blank" rel="noopener" data-i18n="installAddon">📦 Installa addon Stremio</a>
+        <a href="/cast" data-i18n="newSearch">↩ Nuova ricerca</a>
+        <a href="/" data-i18n="backToManager">↩ Torna al manager</a>
       </div>
     </div>
 
-    <div class="footer-note">
+    <div class="footer-note" data-i18n="footerNote">
       Dopo il cast: apri la pagina del titolo in Stremio, vedrai uno stream <b>DMV🟣 Cast ▶️</b>.
     </div>
   </div>
 
   <script>
+    const L = {
+      it: {
+        subtitle: 'Cast personale TorBox per Stremio', backManager: '⬅ Manager',
+        loginRequired: '🔐 Login richiesto', loginText: 'Per cercare e castare titoli devi prima fare login.',
+        loginSubmit: 'Accedi', loginSubmitKey: 'Accedi con API key',
+        loginHelpHtml: 'Oppure <a href="/" style="color:#c084fc;font-weight:700;">vai al manager completo</a>.',
+        searchH2: '🔎 Cerca nel database', searchBtn: 'Cerca',
+        castBtn: '📡 Cast su TorBox', installAddon: '📦 Installa addon Stremio',
+        newSearch: '↩ Nuova ricerca', backToManager: '↩ Torna al manager',
+        footerNote: 'Dopo il cast: apri la pagina del titolo in Stremio, vedrai uno stream DMV🟣 Cast ▶️.',
+        verifying: 'Verifica in corso…', loginFailed: 'Login fallito', networkError: 'Errore di rete: ',
+        okReload: 'OK! Ricarico…', usernameRequired: 'Username e password obbligatori', apiKeyRequired: 'API key obbligatoria',
+        notLogged: '(non loggato)', searchHint: 'Digita qualcosa o scegli un filtro…',
+        searching: 'Ricerca in corso…', searchError: 'Errore ricerca', noResults: 'Nessun risultato.',
+        results: ' risultati', maxResults: ' (max 50, raffina la ricerca)',
+        typeAll: 'Tipo: tutti', typeMovie: 'Film', typeSeries: 'Serie',
+        cacheAll: 'Cache: tutti', cacheTB: 'Solo TB ⚡', cacheNone: 'Non in cache',
+        langAll: 'Lingua: tutti', langIta: 'Solo ITA',
+        sortSeeders: 'Più seeders', sortDate: 'Più recenti', sortSize: 'Più grandi', sortTitle: 'Titolo A→Z',
+        seriesBadge: '📺 Serie', movieBadge: '🎬 Film',
+        choose: 'Scegli', castGo: 'Cast →',
+        loading: 'Carico episodi…', chooseEp: '— Scegli puntata —',
+        castEp: '📡 Cast →', pickEp: 'Scegli una puntata',
+        seasonPh: 'Stagione', episodePh: 'Episodio',
+        seRequired: 'Stagione ed episodio obbligatori per le serie',
+        errorLoadingEps: 'Errore caricamento episodi',
+        details: '🎬 Dettagli', typeSeriesTV: 'Serie TV', typeFilm: 'Film',
+        episode: 'Episodio', autoDetect: '(auto-detect dal nome file)',
+        dimension: 'Dimensione', casting: 'Invio cast a TorBox...',
+        castError: 'Errore cast', castOk: '✅ Cast salvato! Apri Stremio sullo stesso titolo per vedere lo stream DMV🟣.',
+        castedBtn: '✅ Castato', castNetError: 'Errore di rete',
+        noTitle: '(senza titolo)'
+      },
+      en: {
+        subtitle: 'Personal TorBox cast for Stremio', backManager: '⬅ Manager',
+        loginRequired: '🔐 Login required', loginText: 'You need to log in to search and cast titles.',
+        loginSubmit: 'Login', loginSubmitKey: 'Login with API key',
+        loginHelpHtml: 'Or <a href="/" style="color:#c084fc;font-weight:700;">go to the full manager</a>.',
+        searchH2: '🔎 Search the database', searchBtn: 'Search',
+        castBtn: '📡 Cast on TorBox', installAddon: '📦 Install Stremio addon',
+        newSearch: '↩ New search', backToManager: '↩ Back to manager',
+        footerNote: 'After casting: open the title page in Stremio, you will see a DMV🟣 Cast ▶️ stream.',
+        verifying: 'Verifying…', loginFailed: 'Login failed', networkError: 'Network error: ',
+        okReload: 'OK! Reloading…', usernameRequired: 'Username and password required', apiKeyRequired: 'API key required',
+        notLogged: '(not logged in)', searchHint: 'Type something or pick a filter…',
+        searching: 'Searching…', searchError: 'Search error', noResults: 'No results.',
+        results: ' results', maxResults: ' (max 50, refine your search)',
+        typeAll: 'Type: all', typeMovie: 'Movie', typeSeries: 'Series',
+        cacheAll: 'Cache: all', cacheTB: 'TB only ⚡', cacheNone: 'Not cached',
+        langAll: 'Language: all', langIta: 'ITA only',
+        sortSeeders: 'Most seeders', sortDate: 'Most recent', sortSize: 'Largest', sortTitle: 'Title A→Z',
+        seriesBadge: '📺 Series', movieBadge: '🎬 Movie',
+        choose: 'Choose', castGo: 'Cast →',
+        loading: 'Loading episodes…', chooseEp: '— Choose episode —',
+        castEp: '📡 Cast →', pickEp: 'Choose an episode',
+        seasonPh: 'Season', episodePh: 'Episode',
+        seRequired: 'Season and episode required for series',
+        errorLoadingEps: 'Error loading episodes',
+        details: '🎬 Details', typeSeriesTV: 'TV Series', typeFilm: 'Movie',
+        episode: 'Episode', autoDetect: '(auto-detect from filename)',
+        dimension: 'Size', casting: 'Sending cast to TorBox...',
+        castError: 'Cast error', castOk: '✅ Cast saved! Open Stremio on the same title to see the DMV🟣 stream.',
+        castedBtn: '✅ Casted', castNetError: 'Network error',
+        noTitle: '(no title)'
+      }
+    };
+    var _lang = 'it';
+    try {
+      var stored = localStorage.getItem('icv-lang');
+      if (stored === 'en' || stored === 'eng') _lang = 'en';
+      else if (stored === 'it') _lang = 'it';
+    } catch(e) {}
+    function setLang(l) {
+      if (l === 'eng') l = 'en';
+      if (l !== 'it' && l !== 'en') l = 'it';
+      _lang = l;
+      try { localStorage.setItem('icv-lang', l); } catch(e) {}
+      document.cookie = 'lang=' + l + '; path=/; max-age=31536000; SameSite=Lax';
+      document.querySelectorAll('.lang-btn').forEach(function(b) {
+        var active = b.dataset.lang === l;
+        b.classList.toggle('active', active);
+        if (active) {
+          b.style.background = 'linear-gradient(135deg,#7c3aed,#a855f7)';
+          b.style.color = '#fff';
+          b.style.borderColor = '#a855f7';
+          b.style.boxShadow = '0 0 14px rgba(168,85,247,0.55)';
+        } else {
+          b.style.background = 'rgba(139,92,246,0.10)';
+          b.style.color = '#a78bfa';
+          b.style.borderColor = 'rgba(139,92,246,0.45)';
+          b.style.boxShadow = 'none';
+        }
+      });
+      document.querySelectorAll('[data-i18n]').forEach(function(el) {
+        var k = el.getAttribute('data-i18n'); if (L[l][k] !== undefined) el.textContent = L[l][k];
+      });
+      // Update help with innerHTML
+      var ch = document.getElementById('castLoginHelp');
+      if (ch) ch.innerHTML = L[l].loginHelpHtml;
+      // Update select options
+      var ops = {
+        sType: [['all','typeAll'],['movie','typeMovie'],['series','typeSeries']],
+        sCache: [['all','cacheAll'],['tb_cached','cacheTB'],['uncached','cacheNone']],
+        sLang: [['all','langAll'],['ita','langIta']],
+        sSort: [['seeders','sortSeeders'],['date','sortDate'],['size','sortSize'],['title','sortTitle']]
+      };
+      for (var selId in ops) {
+        var sel = document.getElementById(selId);
+        if (!sel) continue;
+        ops[selId].forEach(function(pair) {
+          var opt = sel.querySelector('option[value="' + pair[0] + '"]');
+          if (opt) opt.textContent = L[l][pair[1]];
+        });
+      }
+    }
+    setLang(_lang);
     const $ = (id) => document.getElementById(id);
     const params = new URLSearchParams(location.search);
 
@@ -1342,7 +1634,7 @@ function renderCastPage() {
       // bounce the user back here in a loop if /login also can't establish
       // the session). The button takes them to the homepage where the actual
       // login form lives.
-      $('identUser').textContent = '(non loggato)';
+      $('identUser').textContent = L[_lang].notLogged;
       $('loginNotice').hidden = false;
 
       function setLoginStatus(msg, kind) {
@@ -1361,7 +1653,7 @@ function renderCastPage() {
       $('tabKey').addEventListener('click', () => switchTab('key'));
 
       async function doLogin(body) {
-        setLoginStatus('Verifica in corso…');
+        setLoginStatus(L[_lang].verifying);
         try {
           const r = await fetch('/auth/login', {
             method: 'POST',
@@ -1369,28 +1661,28 @@ function renderCastPage() {
             body: JSON.stringify(body)
           });
           const data = await r.json().catch(() => ({}));
-          if (!r.ok) { setLoginStatus(data.error || 'Login fallito', 'err'); return; }
+          if (!r.ok) { setLoginStatus(data.error || L[_lang].loginFailed, 'err'); return; }
           if (data.userId) localStorage.setItem('dmvUserId', data.userId);
           if (data.manifestUrl) localStorage.setItem('dmvManifestUrl', data.manifestUrl);
           if (data.apiKeyLast4) localStorage.setItem('dmvApiKeyLast4', data.apiKeyLast4);
           if (data.username) localStorage.setItem('dmvUsername', data.username);
-          setLoginStatus('OK! Ricarico…', 'ok');
+          setLoginStatus(L[_lang].okReload, 'ok');
           setTimeout(() => location.reload(), 300);
         } catch (e) {
-          setLoginStatus('Errore di rete: ' + (e.message || ''), 'err');
+          setLoginStatus(L[_lang].networkError + (e.message || ''), 'err');
         }
       }
       $('loginUserForm').addEventListener('submit', (e) => {
         e.preventDefault();
         const u = $('liUser').value.trim();
         const p = $('liPass').value;
-        if (!u || !p) { setLoginStatus('Username e password obbligatori', 'err'); return; }
+        if (!u || !p) { setLoginStatus(L[_lang].usernameRequired, 'err'); return; }
         doLogin({ username: u, password: p });
       });
       $('loginKeyForm').addEventListener('submit', (e) => {
         e.preventDefault();
         const k = $('liKey').value.trim();
-        if (!k) { setLoginStatus('API key obbligatoria', 'err'); return; }
+        if (!k) { setLoginStatus(L[_lang].apiKeyRequired, 'err'); return; }
         doLogin({ apiKey: k });
       });
     } else {
@@ -1437,12 +1729,12 @@ function renderCastPage() {
           const sort = $('sSort').value;
           if (!q && type === 'all' && cache === 'all' && lang === 'all') {
             $('searchResults').innerHTML = '';
-            setSStatus('Digita qualcosa o scegli un filtro…');
+            setSStatus(L[_lang].searchHint);
             return;
           }
           if (searchAbort) { try { searchAbort.abort(); } catch (_) {} }
           searchAbort = new AbortController();
-          setSStatus('Ricerca in corso…');
+          setSStatus(L[_lang].searching);
           try {
             const url = '/icvdb/search?userId=' + encodeURIComponent(userId)
               + '&q=' + encodeURIComponent(q)
@@ -1453,12 +1745,12 @@ function renderCastPage() {
               + '&limit=50';
             const r = await fetch(url, { signal: searchAbort.signal });
             const data = await r.json().catch(() => ({}));
-            if (!r.ok) { setSStatus(data.error || 'Errore ricerca', 'err'); return; }
+            if (!r.ok) { setSStatus(data.error || L[_lang].searchError, 'err'); return; }
             renderResults(data.results || []);
-            setSStatus((data.results || []).length + ' risultati' + ((data.results || []).length >= 50 ? ' (max 50, raffina la ricerca)' : ''));
+            setSStatus((data.results || []).length + L[_lang].results + ((data.results || []).length >= 50 ? L[_lang].maxResults : ''));
           } catch (e) {
             if (e.name === 'AbortError') return;
-            setSStatus('Errore di rete: ' + (e.message || ''), 'err');
+            setSStatus(L[_lang].networkError + (e.message || ''), 'err');
           }
         }
 
@@ -1466,7 +1758,7 @@ function renderCastPage() {
           const wrap = $('searchResults');
           wrap.innerHTML = '';
           if (!list.length) {
-            wrap.innerHTML = '<div class="status" style="text-align:left;">Nessun risultato.</div>';
+            wrap.innerHTML = '<div class="status" style="text-align:left;">' + L[_lang].noResults + '</div>';
             return;
           }
           for (const row of list) {
@@ -1476,12 +1768,12 @@ function renderCastPage() {
             left.style.minWidth = '0';
             const title = document.createElement('div');
             title.className = 'res-title';
-            title.textContent = row.title || row.info_hash || '(senza titolo)';
+            title.textContent = row.title || row.info_hash || L[_lang].noTitle;
             const meta = document.createElement('div');
             meta.className = 'res-meta';
             const badges = [];
-            if (row.type === 'series') badges.push('<span class="res-badge series">📺 Serie</span>');
-            else badges.push('<span class="res-badge">🎬 Film</span>');
+            if (row.type === 'series') badges.push('<span class="res-badge series">' + L[_lang].seriesBadge + '</span>');
+            else badges.push('<span class="res-badge">' + L[_lang].movieBadge + '</span>');
             if (row.cached_tb) badges.push('<span class="res-badge tb">⚡ TB Cache</span>');
             if (row.is_pack) badges.push('<span class="res-badge">📦 Pack</span>');
             const seeders = Number(row.seeders) > 0 ? '👥 ' + row.seeders : '';
@@ -1498,7 +1790,7 @@ function renderCastPage() {
             const go = document.createElement('button');
             go.className = 'res-go';
             go.type = 'button';
-            go.textContent = row.type === 'series' ? 'Scegli' : 'Cast →';
+            go.textContent = row.type === 'series' ? L[_lang].choose : L[_lang].castGo;
 
             // For series, expand inline picker. We try to load the list of
             // episodes from ICVdb (so the user picks an actual S/E that exists
@@ -1508,7 +1800,7 @@ function renderCastPage() {
               const picker = document.createElement('div');
               picker.className = 'ep-picker';
               picker.style.gridColumn = '1 / -1';
-              picker.innerHTML = '<div style="grid-column:1/-1;color:var(--muted);font-size:12px;">Carico episodi…</div>';
+              picker.innerHTML = '<div style="grid-column:1/-1;color:var(--muted);font-size:12px;">' + L[_lang].loading + '</div>';
               let loaded = false;
               go.addEventListener('click', async () => {
                 const visible = picker.style.display === 'grid';
@@ -1527,7 +1819,7 @@ function renderCastPage() {
                   if (eps.length > 0) {
                     const sel = document.createElement('select');
                     sel.style.cssText = 'grid-column:1/-1;height:38px;padding:0 10px;border-radius:8px;border:1px solid var(--line);background:rgba(10,0,20,0.5);color:var(--text);font:inherit;font-size:13px;';
-                    sel.innerHTML = '<option value="">— Scegli puntata —</option>' + eps.map(f => {
+                    sel.innerHTML = '<option value="">' + L[_lang].chooseEp + '</option>' + eps.map(f => {
                       const s = String(f.imdb_season).padStart(2, '0');
                       const e = String(f.imdb_episode).padStart(2, '0');
                       const label = 'S' + s + 'E' + e + (f.title ? ' · ' + escHtml(String(f.title).split('/').pop()).slice(0, 60) : '');
@@ -1535,11 +1827,11 @@ function renderCastPage() {
                     }).join('');
                     const btn = document.createElement('button');
                     btn.type = 'button';
-                    btn.textContent = '📡 Cast →';
+                    btn.textContent = L[_lang].castEp;
                     // Big button under the dropdown, full-width.
                     btn.style.cssText = 'grid-column:1/-1;height:44px;border:0;border-radius:10px;color:#fff;font:inherit;font-weight:800;font-size:14px;cursor:pointer;background:linear-gradient(135deg,#7c3aed,#ec4899);box-shadow:0 6px 16px rgba(168,85,247,0.25);';
                     btn.addEventListener('click', () => {
-                      if (!sel.value) { alert('Scegli una puntata'); return; }
+                      if (!sel.value) { alert(L[_lang].pickEp); return; }
                       const [s, e] = sel.value.split(',').map(Number);
                       goCast(row, { season: s, episode: e });
                     });
@@ -1551,18 +1843,18 @@ function renderCastPage() {
                     // Fallback: torrent not enriched yet, ask manually.
                     picker.style.gridTemplateColumns = '1fr 1fr auto';
                     picker.innerHTML =
-                      '<input type="number" min="1" placeholder="Stagione" />' +
-                      '<input type="number" min="1" placeholder="Episodio" />' +
-                      '<button type="button">Cast →</button>';
+                      '<input type="number" min="1" placeholder="' + L[_lang].seasonPh + '" />' +
+                      '<input type="number" min="1" placeholder="' + L[_lang].episodePh + '" />' +
+                      '<button type="button">' + L[_lang].castGo + '</button>';
                     picker.querySelector('button').addEventListener('click', () => {
                       const s = Number(picker.querySelectorAll('input')[0].value || 0);
                       const e = Number(picker.querySelectorAll('input')[1].value || 0);
-                      if (!s || !e) { alert('Stagione ed episodio obbligatori per le serie'); return; }
+                      if (!s || !e) { alert(L[_lang].seRequired); return; }
                       goCast(row, { season: s, episode: e });
                     });
                   }
                 } catch (_) {
-                  picker.innerHTML = '<div style="grid-column:1/-1;color:var(--red);font-size:12px;">Errore caricamento episodi</div>';
+                  picker.innerHTML = '<div style="grid-column:1/-1;color:var(--red);font-size:12px;">' + L[_lang].errorLoadingEps + '</div>';
                 }
               });
               div.append(left, go, picker);
@@ -1630,26 +1922,26 @@ function renderCastPage() {
       const filename = params.get('filename') || '';
       const sizeBytes = params.get('size') || '';
 
-      $('castHeader').textContent = '🎬 ' + (filename || title);
+      $('castHeader').textContent = L[_lang].details.charAt(0) + L[_lang].details.charAt(1) + ' ' + (filename || title);
 
-      addMeta('Tipo', type === 'series' ? 'Serie TV' : 'Film');
+      addMeta(L[_lang].details.includes('Details') ? 'Type' : 'Tipo', type === 'series' ? L[_lang].typeSeriesTV : L[_lang].typeFilm);
       addMeta('IMDb', imdbId);
       if (type === 'series') {
         const s = params.get('season') || '0';
         const e = params.get('episode') || '0';
         if (Number(s) > 0 && Number(e) > 0) {
-          addMeta('Episodio', 'S' + String(s).padStart(2,'0') + 'E' + String(e).padStart(2,'0'));
+          addMeta(L[_lang].episode, 'S' + String(s).padStart(2,'0') + 'E' + String(e).padStart(2,'0'));
         } else {
-          addMeta('Episodio', '(auto-detect dal nome file)');
+          addMeta(L[_lang].episode, L[_lang].autoDetect);
         }
       }
       if (params.get('tmdbId')) addMeta('TMDB', params.get('tmdbId'));
       addMeta('Hash', infoHash, true);
       const sizeStr = formatBytes(sizeBytes);
-      if (sizeStr) addMeta('Dimensione', sizeStr);
+      if (sizeStr) addMeta(L[_lang].dimension, sizeStr);
 
       $('castBtn').addEventListener('click', async () => {
-        setStatus('Invio cast a TorBox...');
+        setStatus(L[_lang].casting);
         $('castBtn').disabled = true;
         const body = {};
         for (const [key, value] of params.entries()) {
@@ -1667,14 +1959,14 @@ function renderCastPage() {
           const data = await response.json();
           if (!response.ok) {
             $('castBtn').disabled = false;
-            return setStatus(data.error || 'Errore cast', false);
+            return setStatus(data.error || L[_lang].castError, false);
           }
-          setStatus('✅ Cast salvato! Apri Stremio sullo stesso titolo per vedere lo stream DMV🟣.', true);
+          setStatus(L[_lang].castOk, true);
           $('castLinks').hidden = false;
-          $('castBtn').textContent = '✅ Castato';
+          $('castBtn').textContent = L[_lang].castedBtn;
         } catch (_) {
           $('castBtn').disabled = false;
-          setStatus('Errore di rete', false);
+          setStatus(L[_lang].castNetError, false);
         }
       });
       } // end else (confirm mode)
@@ -1928,23 +2220,28 @@ function renderLibraryPage() {
           <line x1="2" y1="20" x2="2.01" y2="20"/>
         </svg>
         <div>
-          <h1>DMV<span style="color:#a855f7">🟣</span> Libreria <span style="color:#a855f7">📚</span></h1>
-          <span class="sub">La tua libreria TorBox · clicca un file per castarlo su Stremio</span>
+          <h1>DMV<span style="color:#a855f7">🟣</span> <span data-i18n="libTitle">Libreria</span> <span style="color:#a855f7">📚</span></h1>
+          <span class="sub" data-i18n="subtitle">La tua libreria TorBox · clicca un file per castarlo su Stremio</span>
         </div>
       </a>
       <div class="topnav">
-        <a href="/">🏠 Home</a>
-        <a href="javascript:void(0)" id="lnkSettings">⚙️ Impostazioni</a>
+        <a href="/" data-i18n="home">🏠 Home</a>
+        <a href="javascript:void(0)" id="lnkSettings" data-i18n="settingsLink">⚙️ Impostazioni</a>
         <a href="https://torbox.app/dashboard" target="_blank" rel="noopener">🌐 TorBox</a>
-        <button class="danger" id="btnLogout" type="button">Esci</button>
+        <button class="danger" id="btnLogout" type="button" data-i18n="logout">Esci</button>
+        <div class="lang-switch" style="display:flex;align-items:center;gap:2px;display:inline-flex;margin-left:8px;">
+          <button class="lang-btn active" data-lang="it" onclick="setLang('it')" style="background:rgba(139,92,246,0.10);border:1px solid rgba(139,92,246,0.45);color:#a78bfa;padding:4px 10px;cursor:pointer;font-size:11px;font-weight:700;border-radius:6px;font-family:inherit;">ITA</button>
+          <span style="color:rgba(139,92,246,0.4);font-size:11px;font-weight:700;">/</span>
+          <button class="lang-btn" data-lang="en" onclick="setLang('en')" style="background:rgba(139,92,246,0.10);border:1px solid rgba(139,92,246,0.45);color:#a78bfa;padding:4px 10px;cursor:pointer;font-size:11px;font-weight:700;border-radius:6px;font-family:inherit;">ENG</button>
+        </div>
       </div>
     </div>
 
     <div class="stats" id="stats">
-      <div class="stat"><div class="lbl">Torrent</div><div class="val" id="statTotal">—</div><div class="hint" id="statTotalHint">caricamento...</div></div>
-      <div class="stat"><div class="lbl">Spazio usato</div><div class="val" id="statSize">—</div><div class="hint">dimensione totale</div></div>
-      <div class="stat"><div class="lbl">Già castati</div><div class="val" id="statCast">—</div><div class="hint">visibili su Stremio</div></div>
-      <div class="stat"><div class="lbl">In download</div><div class="val" id="statDl">—</div><div class="hint">non ancora completati</div></div>
+      <div class="stat"><div class="lbl" data-i18n="statTorrent">Torrent</div><div class="val" id="statTotal">—</div><div class="hint" id="statTotalHint" data-i18n="statLoading">caricamento...</div></div>
+      <div class="stat"><div class="lbl" data-i18n="statSpace">Spazio usato</div><div class="val" id="statSize">—</div><div class="hint" data-i18n="statTotalSize">dimensione totale</div></div>
+      <div class="stat"><div class="lbl" data-i18n="statCasted">Già castati</div><div class="val" id="statCast">—</div><div class="hint" data-i18n="statStremio">visibili su Stremio</div></div>
+      <div class="stat"><div class="lbl" data-i18n="statDownloading">In download</div><div class="val" id="statDl">—</div><div class="hint" data-i18n="statNotComplete">non ancora completati</div></div>
     </div>
 
     <div class="toolbar">
@@ -1964,7 +2261,7 @@ function renderLibraryPage() {
     </div>
 
     <div id="content" class="lib-grid">
-      <div class="loader">Carico la libreria da TorBox…</div>
+      <div class="loader" data-i18n="loadingLib">Carico la libreria da TorBox…</div>
     </div>
 
     <div class="empty" style="margin-top:6px;font-size:11px;opacity:.5">build ${new Date().toISOString().replace('T',' ').slice(0,19)} UTC</div>
@@ -1973,31 +2270,31 @@ function renderLibraryPage() {
   <!-- Cast modal -->
   <div class="modal-bg" id="modalBg">
     <div class="modal" id="modal">
-      <h3 id="modalTitle">Cast su Stremio</h3>
+      <h3 id="modalTitle" data-i18n="modalCastTitle">Cast su Stremio</h3>
       <p class="modal-sub" id="modalFile"></p>
-      <label>Tipo
+      <label><span data-i18n="modalType">Tipo</span>
         <select id="mType">
           <option value="movie">🎞️ Film</option>
           <option value="series">📺 Serie TV</option>
         </select>
       </label>
-      <label>🔎 Cerca per titolo <span style="color:var(--dim);text-transform:none;font-weight:500">(TMDB → IMDb in automatico)</span>
+      <label><span data-i18n="modalSearchLabel">🔎 Cerca per titolo</span> <span style="color:var(--dim);text-transform:none;font-weight:500">(TMDB → IMDb in automatico)</span>
         <div style="display:flex;gap:6px">
           <input id="mSearch" type="text" placeholder="es. From, Better Call Saul, Dune..." autocomplete="off" style="flex:1">
-          <button type="button" id="mSearchBtn" class="confirm" style="padding:8px 12px;flex:0 0 auto">Cerca</button>
+          <button type="button" id="mSearchBtn" class="confirm" data-i18n="modalSearchBtn" style="padding:8px 12px;flex:0 0 auto">Cerca</button>
         </div>
       </label>
       <div id="mSearchResults" style="display:none;margin:-4px 0 6px 0;max-height:240px;overflow-y:auto;border:1px solid var(--border);border-radius:10px;background:rgba(0,0,0,.2);padding:6px"></div>
-      <label>IMDb ID <span style="color:var(--dim);text-transform:none;font-weight:500">(es. tt9813792 — compilato dalla ricerca)</span>
+      <label>IMDb ID <span style="color:var(--dim);text-transform:none;font-weight:500" data-i18n="modalImdbHint">(es. tt9813792 — compilato dalla ricerca)</span>
         <input id="mImdb" type="text" placeholder="tt0000000" autocomplete="off">
       </label>
       <div id="seWrap" class="row2" style="display:none">
-        <label>Stagione<input id="mSeason" type="number" min="1" value=""></label>
-        <label>Episodio<input id="mEpisode" type="number" min="1" value=""></label>
+        <label><span data-i18n="modalSeason">Stagione</span><input id="mSeason" type="number" min="1" value=""></label>
+        <label><span data-i18n="modalEpisode">Episodio</span><input id="mEpisode" type="number" min="1" value=""></label>
       </div>
       <div class="actions">
-        <button class="cancel" type="button" id="mCancel">Annulla</button>
-        <button class="confirm" type="button" id="mConfirm">Cast su Stremio</button>
+        <button class="cancel" type="button" id="mCancel" data-i18n="modalCancel">Annulla</button>
+        <button class="confirm" type="button" id="mConfirm" data-i18n="modalConfirm">Cast su Stremio</button>
       </div>
     </div>
   </div>
@@ -2005,6 +2302,114 @@ function renderLibraryPage() {
   <div class="toast" id="toast"></div>
 
   <script>
+    const L = {
+      it: {
+        libTitle: 'Libreria', subtitle: 'La tua libreria TorBox · clicca un file per castarlo su Stremio',
+        home: '🏠 Home', settingsLink: '⚙️ Impostazioni', logout: 'Esci',
+        statTorrent: 'Torrent', statLoading: 'caricamento...', statSpace: 'Spazio usato', statTotalSize: 'dimensione totale',
+        statCasted: 'Già castati', statStremio: 'visibili su Stremio', statDownloading: 'In download', statNotComplete: 'non ancora completati',
+        loadingLib: 'Carico la libreria da TorBox…',
+        sortDate: 'Più recenti', sortSize: 'Più grandi', sortName: 'Nome A–Z',
+        filterAll: 'Tutti', filterReady: 'Pronti', filterDl: 'In download',
+        filterPh: '🔍 Cerca per nome…',
+        modalCastTitle: 'Cast su Stremio', modalType: 'Tipo', modalSearchLabel: '🔎 Cerca per titolo',
+        modalSearchBtn: 'Cerca', modalImdbHint: '(es. tt9813792 — compilato dalla ricerca)',
+        modalSeason: 'Stagione', modalEpisode: 'Episodio',
+        modalCancel: 'Annulla', modalConfirm: 'Cast su Stremio',
+        noTorrents: 'La libreria TorBox è vuota.', errorLoading: 'Errore caricamento: ',
+        errorLoadFiles: 'Errore: ', loadingFiles: 'Carico i files…',
+        tbNoFiles: 'TorBox non ha ancora elencato i files (probabilmente in download).',
+        notVideo: 'Non è un file video', castedChip: '✓ Castato', autoBtn: '🪄 Auto',
+        imdbSet: 'IMDb impostato: ', searchTmdb: '🔍 Cerco su TMDB…', tmdbError: 'Errore TMDB',
+        noTmdbResults: 'Nessun risultato. Prova un titolo diverso o cambia tipo.',
+        noTitle: '(senza titolo)', pickUse: '✓ Usa', pickNoImdb: '— no IMDb',
+        imdbInvalid: 'IMDb ID non valido (es. tt9813792)', seRequired: 'Stagione ed episodio obbligatori per le serie',
+        saving: 'Salvataggio...', castOk: '✅ Castato! Apri Stremio per vedere lo stream.',
+        castError: 'Errore cast (HTTP ', networkError: 'Errore di rete: ',
+        torboxDbError: 'Errore TorBox.', forceClean: 'Vuoi rimuovere comunque i CAST locali di questo torrent?',
+        forceCleanNote: '(Il torrent resterà visibile in libreria finché TorBox non lo elimina.)',
+        forceCleanOk: '🧹 Cast locali rimossi ({n}). Riprova a eliminare il torrent fra qualche minuto.',
+        deleted: '🗑️ Eliminato ({n} cast rimossi)', showingN: ' mostrati',
+        optMovie: '🎞️ Film', optSeries: '📺 Serie TV',
+        openBtn: 'Apri', openTitle: 'Mostra/nascondi i file di questo torrent',
+        deleteBtn: 'Elimina', confirmDelete: 'Vuoi eliminare il torrent e tutti i cast correlati?',
+        deletingBtn: '⌛ Elimino…'
+      },
+      en: {
+        libTitle: 'Library', subtitle: 'Your TorBox library · click a file to cast it on Stremio',
+        home: '🏠 Home', settingsLink: '⚙️ Settings', logout: 'Logout',
+        statTorrent: 'Torrents', statLoading: 'loading...', statSpace: 'Space used', statTotalSize: 'total size',
+        statCasted: 'Already casted', statStremio: 'visible on Stremio', statDownloading: 'Downloading', statNotComplete: 'not yet completed',
+        loadingLib: 'Loading library from TorBox…',
+        sortDate: 'Most recent', sortSize: 'Largest', sortName: 'Name A–Z',
+        filterAll: 'All', filterReady: 'Ready', filterDl: 'Downloading',
+        filterPh: '🔍 Search by name…',
+        modalCastTitle: 'Cast on Stremio', modalType: 'Type', modalSearchLabel: '🔎 Search by title',
+        modalSearchBtn: 'Search', modalImdbHint: '(e.g. tt9813792 — filled from search)',
+        modalSeason: 'Season', modalEpisode: 'Episode',
+        modalCancel: 'Cancel', modalConfirm: 'Cast on Stremio',
+        noTorrents: 'Your TorBox library is empty.', errorLoading: 'Loading error: ',
+        errorLoadFiles: 'Error: ', loadingFiles: 'Loading files…',
+        tbNoFiles: 'TorBox has not listed the files yet (probably downloading).',
+        notVideo: 'Not a video file', castedChip: '✓ Casted', autoBtn: '🪄 Auto',
+        imdbSet: 'IMDb set: ', searchTmdb: '🔍 Searching TMDB…', tmdbError: 'TMDB error',
+        noTmdbResults: 'No results. Try a different title or change type.',
+        noTitle: '(no title)', pickUse: '✓ Use', pickNoImdb: '— no IMDb',
+        imdbInvalid: 'Invalid IMDb ID (e.g. tt9813792)', seRequired: 'Season and episode required for series',
+        saving: 'Saving...', castOk: '✅ Casted! Open Stremio to see the stream.',
+        castError: 'Cast error (HTTP ', networkError: 'Network error: ',
+        torboxDbError: 'TorBox error.', forceClean: 'Do you want to remove the local CASTS for this torrent anyway?',
+        forceCleanNote: '(The torrent will remain visible in the library until TorBox deletes it.)',
+        forceCleanOk: '🧹 Local casts removed ({n}). Try deleting the torrent again in a few minutes.',
+        deleted: '🗑️ Deleted ({n} casts removed)', showingN: ' shown',
+        optMovie: '🎞️ Movie', optSeries: '📺 TV Series',
+        openBtn: 'Open', openTitle: 'Show/hide the files of this torrent',
+        deleteBtn: 'Delete', confirmDelete: 'Do you want to delete this torrent and all related casts?',
+        deletingBtn: '⌛ Deleting…'
+      }
+    };
+    var _lang = 'it';
+    try {
+      var stored = localStorage.getItem('icv-lang');
+      if (stored === 'en' || stored === 'eng') _lang = 'en';
+      else if (stored === 'it') _lang = 'it';
+    } catch(e) {}
+    function setLang(l) {
+      if (l === 'eng') l = 'en';
+      if (l !== 'it' && l !== 'en') l = 'it';
+      _lang = l;
+      try { localStorage.setItem('icv-lang', l); } catch(e) {}
+      document.cookie = 'lang=' + l + '; path=/; max-age=31536000; SameSite=Lax';
+      document.querySelectorAll('.lang-btn').forEach(function(b) {
+        var active = b.dataset.lang === l;
+        b.classList.toggle('active', active);
+        if (active) {
+          b.style.background = 'linear-gradient(135deg,#7c3aed,#a855f7)';
+          b.style.color = '#fff';
+          b.style.borderColor = '#a855f7';
+          b.style.boxShadow = '0 0 14px rgba(168,85,247,0.55)';
+        } else {
+          b.style.background = 'rgba(139,92,246,0.10)';
+          b.style.color = '#a78bfa';
+          b.style.borderColor = 'rgba(139,92,246,0.45)';
+          b.style.boxShadow = 'none';
+        }
+      });
+      document.querySelectorAll('[data-i18n]').forEach(function(el) {
+        var k = el.getAttribute('data-i18n'); if (L[l][k] !== undefined) el.textContent = L[l][k];
+      });
+      // Update select options
+      var sortOps = [['date','sortDate'],['size','sortSize'],['name','sortName']];
+      var statusOps = [['all','filterAll'],['ready','filterReady'],['dl','filterDl']];
+      sortOps.forEach(function(p) { var o = document.querySelector('#sort option[value="'+p[0]+'"]'); if(o) o.textContent = L[l][p[1]]; });
+      statusOps.forEach(function(p) { var o = document.querySelector('#statusFilter option[value="'+p[0]+'"]'); if(o) o.textContent = L[l][p[1]]; });
+      // Update search placeholder
+      var f = document.getElementById('filter'); if(f) f.placeholder = L[l].filterPh;
+      // Update modal type select
+      var tm = document.querySelector('#mType option[value="movie"]'); if(tm) tm.textContent = L[l].optMovie;
+      var ts = document.querySelector('#mType option[value="series"]'); if(ts) ts.textContent = L[l].optSeries;
+    }
+    setLang(_lang);
     const $ = (id) => document.getElementById(id);
     const userId = localStorage.getItem('dmvUserId') || '';
     if (!userId) { window.location.href = '/login?return=' + encodeURIComponent(location.pathname); }
@@ -2064,7 +2469,7 @@ function renderLibraryPage() {
     function statusChip(t){
       const state = String(t.download_state || '').toLowerCase();
       const finished = t.download_finished || t.cached || /completed|seeding|cached|finished|uploading/.test(state);
-      if (finished) return { cls:'ok', label:'pronto' };
+      if (finished) return { cls:'ok', label: _lang === 'it' ? 'pronto' : 'ready' };
       if (/downloading|metadl|pending|queued|stalled|allocating|checking/.test(state)) {
         const pct = Math.round((Number(t.progress) || 0) * 100);
         return { cls:'dl', label: pct ? pct + '%' : (state || 'download') };
@@ -2099,7 +2504,7 @@ function renderLibraryPage() {
     }
 
     async function loadAll(){
-      $('content').innerHTML = '<div class="loader">Carico la libreria da TorBox…</div>';
+      $('content').innerHTML = '<div class="loader">' + L[_lang].loadingLib + '</div>';
       try {
         const [libR, castsR] = await Promise.all([
           fetch('/torbox/' + encodeURIComponent(userId) + '/library/data'),
@@ -2107,7 +2512,7 @@ function renderLibraryPage() {
         ]);
         const lib = await libR.json();
         const casts = await castsR.json();
-        if (!libR.ok) throw new Error(lib.error || 'Errore libreria');
+        if (!libR.ok) throw new Error(lib.error || L[_lang].errorLoading);
         allTorrents = Array.isArray(lib.torrents) ? lib.torrents : [];
         castedKeys = new Set();
         (casts.casts || []).forEach(c => {
@@ -2117,7 +2522,7 @@ function renderLibraryPage() {
         paintStats();
         render();
       } catch (e) {
-        $('content').innerHTML = '<div class="empty" style="color:#fecaca">❌ ' + (e.message || 'Errore') + '</div>';
+        $('content').innerHTML = '<div class="empty" style="color:#fecaca">❌ ' + (e.message || L[_lang].errorLoading) + '</div>';
       }
     }
 
@@ -2126,7 +2531,7 @@ function renderLibraryPage() {
       const sizeTotal = allTorrents.reduce((s,t) => s + (Number(t.size) || 0), 0);
       const dl = allTorrents.filter(t => statusChip(t).cls === 'dl').length;
       $('statTotal').textContent = total;
-      $('statTotalHint').textContent = total === 1 ? 'torrent nella tua libreria' : 'torrent nella tua libreria';
+      $('statTotalHint').textContent = _lang === 'it' ? 'torrent nella tua libreria' : 'torrents in your library';
       $('statSize').textContent = fmtBytes(sizeTotal);
       $('statCast').textContent = castedKeys.size;
       $('statDl').textContent = dl;
@@ -2160,7 +2565,7 @@ function renderLibraryPage() {
       const root = $('content');
       root.innerHTML = '';
       if (!list.length) {
-        root.innerHTML = '<div class="empty">📭 Nessun torrent ' + (q ? 'corrispondente alla ricerca.' : 'nella tua libreria TorBox.') + '</div>';
+        root.innerHTML = '<div class="empty">📭 ' + L[_lang].noTorrents + '</div>';
         return;
       }
       // Pagination: render in chunks to keep the DOM responsive even with 1000+ torrents.
@@ -2171,8 +2576,8 @@ function renderLibraryPage() {
         for (const t of slice) root.appendChild(renderTorrent(t));
         shown += slice.length;
         moreBtn.textContent = shown < list.length
-          ? '⬇️ Carica altri 50 (' + (list.length - shown) + ' rimanenti)'
-          : '✓ Tutti caricati';
+          ? (_lang === 'it' ? '⬇️ Carica altri 50 (' + (list.length - shown) + ' rimanenti)' : '⬇️ Load 50 more (' + (list.length - shown) + ' remaining)')
+          : (_lang === 'it' ? '✓ Tutti caricati' : '✓ All loaded');
         moreBtn.disabled = shown >= list.length;
         moreBtn.style.opacity = shown >= list.length ? .5 : 1;
       }
@@ -2243,8 +2648,8 @@ function renderLibraryPage() {
       // Apri = mostra/nasconde il pannello file (era il click implicito sulla riga)
       const btnOpen = el('button','btn-icon');
       btnOpen.type = 'button';
-      btnOpen.innerHTML = '<span class="ic">📂</span><span>Apri</span>';
-      btnOpen.title = 'Mostra/nascondi i file di questo torrent';
+      btnOpen.innerHTML = '<span class="ic">📂</span><span>' + L[_lang].openBtn + '</span>';
+      btnOpen.title = L[_lang].openTitle;
       btnOpen.addEventListener('click', (ev) => {
         ev.stopPropagation();
         item.classList.toggle('open');
@@ -2275,7 +2680,7 @@ function renderLibraryPage() {
           });
           const data = await r.json();
           if (!data.ok) {
-            showToast(data.error || 'Errore', 'err');
+            showToast(data.error || L[_lang].errorLoading, 'err');
             btnAutoAll.innerHTML = '<span class="ic">🪄</span><span>Auto</span>';
             btnAutoAll.disabled = false;
             return;
@@ -2287,7 +2692,7 @@ function renderLibraryPage() {
           await reloadFilesPanel(t, item, fwrap);
           paintStats();
         } catch (e) {
-          showToast('Errore di rete', 'err');
+          showToast(L[_lang].networkError, 'err');
           btnAutoAll.innerHTML = '<span class="ic">🪄</span><span>Auto</span>';
           btnAutoAll.disabled = false;
         }
@@ -2323,7 +2728,7 @@ function renderLibraryPage() {
       btnDel.style.color = '#fecaca';
       btnDel.addEventListener('click', async (ev) => {
         ev.stopPropagation();
-        if (!confirm('Eliminare definitivamente "' + (t.name || 'questo torrent') + '" da TorBox?')) return;
+        if (!confirm(L[_lang].confirmDelete)) return;
         btnDel.disabled = true;
         btnDel.innerHTML = '<span class="ic">⏳</span><span>Del</span>';
         const baseUrl = '/torbox/' + encodeURIComponent(userId) + '/library/torrent/' + encodeURIComponent(t.id);
@@ -2339,28 +2744,28 @@ function renderLibraryPage() {
             // user can at least get a clean state on their side.
             if (data.canForce) {
               const ok = confirm(
-                (data.error || 'Errore TorBox.') +
-                '\\n\\nVuoi rimuovere comunque i CAST locali di questo torrent? ' +
-                '(Il torrent resterà visibile in libreria finché TorBox non lo elimina.)'
+                (data.error || L[_lang].torboxDbError) +
+                '\\n\\n' + L[_lang].forceClean + ' ' +
+                L[_lang].forceCleanNote
               );
               if (!ok) { resetBtn(); return; }
               const r2 = await fetch(baseUrl + '?force=1', { method: 'DELETE' });
               const d2 = await r2.json().catch(() => ({}));
-              if (!r2.ok) { showToast(d2.error || 'Errore force-clean', 'err'); resetBtn(); return; }
-              showToast('🧹 Cast locali rimossi (' + d2.removedCasts + '). Riprova a eliminare il torrent fra qualche minuto.', 'ok');
+              if (!r2.ok) { showToast(d2.error || L[_lang].torboxDbError, 'err'); resetBtn(); return; }
+              showToast(L[_lang].forceCleanOk.replace('{n}', d2.removedCasts || 0), 'ok');
               paintStats();
               resetBtn();
               return;
             }
-            showToast(data.error || 'Errore', 'err');
+            showToast(data.error || L[_lang].errorLoading, 'err');
             resetBtn();
             return;
           }
-          showToast('🗑️ Eliminato (' + data.removedCasts + ' cast rimossi)', 'ok');
+          showToast(L[_lang].deleted.replace('{n}', data.removedCasts || 0), 'ok');
           item.style.transition = 'opacity .25s'; item.style.opacity = '0';
           setTimeout(() => loadAll(), 350);
         } catch (e) {
-          showToast('Errore di rete: ' + (e && e.message ? e.message : 'sconosciuto'), 'err');
+          showToast(L[_lang].networkError + (e && e.message ? e.message : ''), 'err');
           resetBtn();
         }
       });
@@ -2379,7 +2784,7 @@ function renderLibraryPage() {
 
       // Files panel (lazy-loaded on first expand).
       const fwrap = el('div','files');
-      fwrap.append(el('div','empty','Carico i files…'));
+      fwrap.append(el('div','empty', L[_lang].loadingFiles));
       let filesLoaded = false;
       let filesLoading = false;
       async function ensureFilesLoaded(){
@@ -2390,14 +2795,14 @@ function renderLibraryPage() {
           const data = await r.json();
           if (!r.ok) {
             fwrap.innerHTML = '';
-            fwrap.append(el('div','empty', 'Errore: ' + (data.error || 'caricamento fallito')));
+            fwrap.append(el('div','empty', L[_lang].errorLoadFiles + (data.error || '')));
             return;
           }
           renderFilesPanel(t, Array.isArray(data.files) ? data.files : [], fwrap);
           filesLoaded = true;
         } catch (e) {
           fwrap.innerHTML = '';
-          fwrap.append(el('div','empty', 'Errore di rete: ' + (e.message || e)));
+          fwrap.append(el('div','empty', L[_lang].networkError + (e.message || e)));
         } finally {
           filesLoading = false;
         }
@@ -2412,7 +2817,7 @@ function renderLibraryPage() {
     function renderFilesPanel(t, files, fwrap){
       fwrap.innerHTML = '';
       if (!files.length) {
-        fwrap.append(el('div','empty','TorBox non ha ancora elencato i files (probabilmente in download).'));
+        fwrap.append(el('div','empty', L[_lang].tbNoFiles));
         return;
       }
       files.forEach((f, idx) => {
@@ -2432,9 +2837,9 @@ function renderLibraryPage() {
         ba.dataset.castKey = key;
         ba.dataset.castRole = 'manual';
         ba.addEventListener('click', (ev) => { ev.stopPropagation(); openCastModal(t, f, { item: fwrap.parentElement, fwrap }); });
-        if (!isV) { ba.disabled = true; ba.title = 'Non è un file video'; ba.style.opacity = .35; ba.style.cursor='not-allowed'; }
+        if (!isV) { ba.disabled = true; ba.title = L[_lang].notVideo; ba.style.opacity = .35; ba.style.cursor='not-allowed'; }
         if (castedKeys.has(key)) {
-          ba.textContent = '✓ Castato';
+          ba.textContent = L[_lang].castedChip;
           ba.style.background = 'rgba(52,211,153,.2)';
           ba.style.border = '1px solid rgba(52,211,153,.4)';
           ba.style.color = '#a7f3d0';
@@ -2494,7 +2899,7 @@ function renderLibraryPage() {
     function openCastModal(torrent, file, ctx){
       modalCtx = { torrent, file, item: (ctx && ctx.item) || null, fwrap: (ctx && ctx.fwrap) || null };
       const fname = file.name || file.short_name || '';
-      $('modalTitle').textContent = 'Cast su Stremio';
+      $('modalTitle').textContent = L[_lang].modalCastTitle;
       $('modalFile').textContent = String(fname).split('/').pop() + ' · ' + fmtBytes(file.size);
       const se = parseSE(fname);
       const isSeries = se.season > 0 && se.episode > 0;
@@ -2548,13 +2953,13 @@ function renderLibraryPage() {
       const box = $('mSearchResults');
       if (q.length < 2) { box.style.display = 'none'; box.innerHTML = ''; return; }
       box.style.display = 'block';
-      box.innerHTML = '<div style="padding:8px;opacity:.7;font-size:13px">🔍 Cerco su TMDB…</div>';
+      box.innerHTML = '<div style="padding:8px;opacity:.7;font-size:13px">' + L[_lang].searchTmdb + '</div>';
       try {
         const r = await fetch('/torbox/' + encodeURIComponent(userId) + '/tmdb-search?type=' + encodeURIComponent(type) + '&q=' + encodeURIComponent(q));
         const data = await r.json();
-        if (!r.ok) { box.innerHTML = '<div style="padding:8px;color:#fca5a5;font-size:13px">' + (data.error || 'Errore TMDB') + '</div>'; return; }
+        if (!r.ok) { box.innerHTML = '<div style="padding:8px;color:#fca5a5;font-size:13px">' + (data.error || L[_lang].tmdbError) + '</div>'; return; }
         const results = Array.isArray(data.results) ? data.results : [];
-        if (results.length === 0) { box.innerHTML = '<div style="padding:8px;opacity:.7;font-size:13px">Nessun risultato. Prova un titolo diverso o cambia tipo.</div>'; return; }
+        if (results.length === 0) { box.innerHTML = '<div style="padding:8px;opacity:.7;font-size:13px">' + L[_lang].noTmdbResults + '</div>'; return; }
         box.innerHTML = '';
         results.forEach(item => {
           const row = document.createElement('div');
@@ -2570,7 +2975,7 @@ function renderLibraryPage() {
           txt.style.cssText = 'flex:1;min-width:0';
           const ttl = document.createElement('div');
           ttl.style.cssText = 'font-weight:600;font-size:14px;line-height:1.25;color:#e9d5ff';
-          ttl.textContent = (item.title || '(senza titolo)') + (item.year ? ' (' + item.year + ')' : '');
+          ttl.textContent = (item.title || L[_lang].noTitle) + (item.year ? ' (' + item.year + ')' : '');
           const sub = document.createElement('div');
           sub.style.cssText = 'font-size:11px;opacity:.65;margin-top:2px';
           sub.textContent = (item.original && item.original !== item.title ? item.original + ' · ' : '') + 'TMDB ' + item.tmdbId + (item.imdbId ? ' · ' + item.imdbId : ' · (no IMDb)');
@@ -2579,7 +2984,7 @@ function renderLibraryPage() {
           pickBtn.type = 'button';
           pickBtn.className = 'confirm';
           pickBtn.style.cssText = 'padding:6px 12px;font-size:12px;flex:0 0 auto';
-          pickBtn.textContent = item.imdbId ? '✓ Usa' : '— no IMDb';
+          pickBtn.textContent = item.imdbId ? L[_lang].pickUse : L[_lang].pickNoImdb;
           pickBtn.disabled = !item.imdbId;
           pickBtn.onclick = (e) => { e.stopPropagation(); pickResult(item); };
           row.onclick = () => { if (item.imdbId) pickResult(item); };
@@ -2594,7 +2999,7 @@ function renderLibraryPage() {
       $('mImdb').value = item.imdbId || '';
       $('mSearchResults').style.display = 'none';
       $('mSearchResults').innerHTML = '';
-      showToast('IMDb impostato: ' + item.imdbId, 'ok');
+      showToast(L[_lang].imdbSet + item.imdbId, 'ok');
       if ($('mType').value === 'series') {
         // jump to season field if empty so the user can fill S/E quickly
         if (!$('mSeason').value) setTimeout(() => $('mSeason').focus(), 50);
@@ -2608,10 +3013,10 @@ function renderLibraryPage() {
       const { torrent, file, item, fwrap } = modalCtx;
       const type = $('mType').value;
       const imdbId = $('mImdb').value.trim();
-      if (!/^tt\\d+$/.test(imdbId)) { showToast('IMDb ID non valido (es. tt9813792)', 'err'); return; }
+      if (!/^tt\\d+$/.test(imdbId)) { showToast(L[_lang].imdbInvalid, 'err'); return; }
       const season = Number($('mSeason').value || 0);
       const episode = Number($('mEpisode').value || 0);
-      if (type === 'series' && (!season || !episode)) { showToast('Stagione ed episodio obbligatori per le serie', 'err'); return; }
+      if (type === 'series' && (!season || !episode)) { showToast(L[_lang].seRequired, 'err'); return; }
 
       const body = {
         torrentId: torrent.id,
@@ -2627,7 +3032,7 @@ function renderLibraryPage() {
       };
       const btn = $('mConfirm');
       btn.disabled = true;
-      btn.textContent = 'Salvataggio...';
+      btn.textContent = L[_lang].saving;
       let ok = false;
       try {
         const r = await fetch('/torbox/' + encodeURIComponent(userId) + '/library/cast', {
@@ -2637,11 +3042,11 @@ function renderLibraryPage() {
         });
         const data = await r.json().catch(() => ({}));
         if (!r.ok) {
-          showToast(data.error || ('Errore cast (HTTP ' + r.status + ')'), 'err');
+          showToast(data.error || (L[_lang].castError + r.status + ')'), 'err');
           return;
         }
         ok = true;
-        showToast('✅ Castato! Apri Stremio per vedere lo stream.', 'ok');
+        showToast(L[_lang].castOk, 'ok');
         const key = (torrent.hash || '').toLowerCase() + '|' + (file.id ?? file.file_id ?? '');
         castedKeys.add(key);
         // If the torrent's file panel is closed, open it so the user sees the result.
@@ -2669,16 +3074,16 @@ function renderLibraryPage() {
         closeModal();
         paintStats();
       } catch (e) {
-        showToast('Errore di rete: ' + (e && e.message ? e.message : 'sconosciuto'), 'err');
+        showToast(L[_lang].networkError + (e && e.message ? e.message : ''), 'err');
       } finally {
         // Always reset the button so the modal can't get stuck on "Salvataggio..."
         if (!ok) {
           btn.disabled = false;
-          btn.textContent = 'Cast su Stremio';
+          btn.textContent = L[_lang].modalConfirm;
         } else {
           // Reset for the next open as well (closeModal hides but doesn't reset state)
           btn.disabled = false;
-          btn.textContent = 'Cast su Stremio';
+          btn.textContent = L[_lang].modalConfirm;
         }
       }
     });
@@ -2752,125 +3157,245 @@ function renderSettingsPage() {
 </style></head><body>
 <div class="wrap">
   <header>
-    <h1>⚙️ Impostazioni DMV🟣 Cast</h1>
+    <h1 data-i18n="heading">Impostazioni DMV Cast</h1>
     <div class="links">
-      <a href="javascript:void(0)" id="lnkLib">🗂️ Libreria</a>
-      <a href="javascript:void(0)" id="lnkCast">📡 Cast</a>
-      <a href="javascript:void(0)" id="lnkLogout">Esci</a>
+      <a href="javascript:void(0)" id="lnkLib" data-i18n="libLink">Libreria</a>
+      <a href="javascript:void(0)" id="lnkCast" data-i18n="castLink"> Cast</a>
+      <a href="javascript:void(0)" id="lnkLogout" data-i18n="logout">Esci</a>
+      <span class="lang-switch" style="display:inline-flex;align-items:center;gap:2px;margin-left:8px;">
+        <button class="lang-btn active" data-lang="it" onclick="setLang('it')" style="background:linear-gradient(135deg,#7c3aed,#a855f7);border:1px solid #a855f7;color:#fff;padding:4px 10px;cursor:pointer;font-size:11px;font-weight:700;border-radius:6px;font-family:inherit;box-shadow:0 0 14px rgba(168,85,247,0.55);">ITA</button>
+        <span style="color:rgba(139,92,246,0.4);font-size:11px;font-weight:700;">/</span>
+        <button class="lang-btn" data-lang="en" onclick="setLang('en')" style="background:rgba(139,92,246,0.10);border:1px solid rgba(139,92,246,0.45);color:#a78bfa;padding:4px 10px;cursor:pointer;font-size:11px;font-weight:700;border-radius:6px;font-family:inherit;">ENG</button>
+      </span>
     </div>
   </header>
 
   <div class="card" id="installCard">
-    <h2>📦 Installa l'addon su Stremio</h2>
-    <p class="sub">Hai due varianti: <b>completa</b> (con cataloghi visibili in Home e Scopri) o <b>solo stream</b> (nessun catalogo, nessuna riga nella Home).</p>
-    <div style="margin-bottom:10px"><b style="font-size:12px;color:#d8b4fe">VERSIONE COMPLETA · con cataloghi</b></div>
+    <h2 data-i18n="installH2">📦 Installa l'addon su Stremio</h2>
+    <p class="sub" data-i18n="installDesc">Hai due varianti: <b>completa</b> (con cataloghi visibili in Home e Scopri) o <b>solo stream</b> (nessun catalogo, nessuna riga nella Home).</p>
+    <div style="margin-bottom:10px"><b style="font-size:12px;color:#d8b4fe" data-i18n="fullVersionLabel">VERSIONE COMPLETA · con cataloghi</b></div>
     <div class="install-row">
-      <a id="instFull" href="#">⚡ Installa</a>
+      <a id="instFull" href="#" data-i18n="installFull">⚡ Installa</a>
       <a id="instFullWeb" href="#" target="_blank" class="alt">🌐 Stremio Web</a>
-      <a href="#" id="copyFull" class="alt" data-copy="full">📋 Copia manifest</a>
+      <a href="#" id="copyFull" class="alt" data-copy="full" data-i18n="copyManifest">📋 Copia manifest</a>
     </div>
     <code class="url" id="urlFull">—</code>
-    <div style="margin:14px 0 10px"><b style="font-size:12px;color:#94a3b8">VERSIONE NO-CATALOG · solo stream</b></div>
+    <div style="margin:14px 0 10px"><b style="font-size:12px;color:#94a3b8" data-i18n="ncVersionLabel">VERSIONE NO-CATALOG · solo stream</b></div>
     <div class="install-row">
-      <a id="instNC" href="#" class="alt">⚡ Installa</a>
+      <a id="instNC" href="#" class="alt" data-i18n="installNC">⚡ Installa</a>
       <a id="instNCWeb" href="#" target="_blank" class="alt">🌐 Stremio Web</a>
-      <a href="#" id="copyNC" class="alt" data-copy="nc">📋 Copia manifest</a>
+      <a href="#" id="copyNC" class="alt" data-copy="nc" data-i18n="copyManifestNC">📋 Copia manifest</a>
     </div>
     <code class="url" id="urlNC">—</code>
   </div>
 
   <div class="card" id="catalogCard">
-    <h2>🏠 Catalogo Stremio</h2>
-    <p class="sub">Cosa esporre come catalogo nella Home / sezione Scopri di Stremio. <b>Ricorda</b> di reinstallare l'addon dopo aver cambiato il <b>modo</b> o la <b>sorgente</b> (Stremio fa cache del manifest).</p>
+    <h2 data-i18n="catalogH2">🏠 Catalogo Stremio</h2>
+    <p class="sub" id="catalogDesc">Cosa esporre come catalogo nella Home / sezione Scopri di Stremio. <b>Ricorda</b> di reinstallare l'addon dopo aver cambiato il <b>modo</b> o la <b>sorgente</b> (Stremio fa cache del manifest).</p>
 
-    <!-- Visible only while catalog_mode or catalog_source differ from the
-         loaded values. Populated by JS on every change of those two selects. -->
-    <div id="reinstallBanner" style="display:none;margin:0 0 14px;padding:12px 14px;border-radius:10px;background:linear-gradient(135deg,rgba(251,191,36,0.18),rgba(236,72,153,0.18));border:1px solid rgba(251,191,36,0.55);color:#fde68a;font-size:13px;line-height:1.5;">
-      ⚠️ <b>Modifica al catalogo rilevata</b> — dopo aver salvato dovrai <b>reinstallare l'addon</b> in Stremio (Stremio fa cache del manifest e non vedrà i nuovi cataloghi finché non rimuovi e reinstalli dal pannello Addon).
+    <div id="reinstallBanner" style="display:none;margin:0 0 14px;padding:12px 14px;border-radius:10px;background:linear-gradient(135deg,rgba(251,191,36,0.18),rgba(236,72,153,0.18));border:1px solid rgba(251,191,36,0.55);color:#fde68a;font-size:13px;line-height:1.5;" data-i18n-html="reinstallBanner">
+      ⚠️ <b>Modifica al catalogo rilevata</b> — dopo aver salvato dovrai <b>reinstallare l'addon</b> in Stremio.
     </div>
     <div class="row">
-      <div class="label">Modalità catalogo
-        <small><b>full</b> = catalogo visibile in Home e Scopri · <b>off</b> = nessun catalogo</small>
+      <div class="label"><span data-i18n="catModelabel">Modalità catalogo</span>
+        <small data-i18n-html="catModeDesc"><b>full</b> = catalogo visibile in Home e Scopri · <b>off</b> = nessun catalogo</small>
       </div>
       <select id="catalog_mode">
-        <option value="full">full — completo</option>
-        <option value="off">off — nessun catalogo</option>
+        <option value="full" data-i18n="catModeFull">full — completo</option>
+        <option value="off" data-i18n="catModeOff">off — nessun catalogo</option>
       </select>
     </div>
     <div class="row">
-      <div class="label">Sorgente catalogo
-        <small><b>casts</b> = solo cast salvati · <b>library</b> = tutta la libreria TorBox riconosciuta da ICVdb · <b>both-merged</b> = uniti in un solo elenco · <b>both-split</b> = due righe separate "Cast" + "Libreria"</small>
+      <div class="label"><span data-i18n="catSrcLabel">Sorgente catalogo</span>
+        <small data-i18n-html="catSrcDesc"><b>casts</b> = solo cast salvati · <b>library</b> = tutta la libreria TorBox riconosciuta da ICVdb · <b>both-merged</b> = uniti in un solo elenco · <b>both-split</b> = due righe separate "Cast" + "Libreria"</small>
       </div>
       <select id="catalog_source">
-        <option value="casts">casts — solo cast</option>
-        <option value="library">library — solo libreria</option>
-        <option value="both-merged">both-merged — uniti</option>
-        <option value="both-split">both-split — sdoppiati</option>
+        <option value="casts" data-i18n="catSrcCasts">casts — solo cast</option>
+        <option value="library" data-i18n="catSrcLib">library — solo libreria</option>
+        <option value="both-merged" data-i18n="catSrcMerged">both-merged — uniti</option>
+        <option value="both-split" data-i18n="catSrcSplit">both-split — sdoppiati</option>
       </select>
     </div>
     <div class="row">
-      <div class="label">Ordine catalogo CAST
-        <small>Come ordinare i titoli nel catalogo dei cast</small>
+      <div class="label"><span data-i18n="sortCastLabel">Ordine catalogo CAST</span>
+        <small data-i18n="sortCastDesc">Come ordinare i titoli nel catalogo dei cast</small>
       </div>
       <select id="catalog_sort_casts">
-        <option value="recent">più recenti prima</option>
-        <option value="oldest">più vecchi prima</option>
-        <option value="biggest">più grandi prima</option>
-        <option value="smallest">più piccoli prima</option>
+        <option value="recent" data-i18n="sortRecent">più recenti prima</option>
+        <option value="oldest" data-i18n="sortOldest">più vecchi prima</option>
+        <option value="biggest" data-i18n="sortBiggest">più grandi prima</option>
+        <option value="smallest" data-i18n="sortSmallest">più piccoli prima</option>
       </select>
     </div>
     <div class="row">
-      <div class="label">Ordine catalogo LIBRERIA
-        <small>Come ordinare i titoli nel catalogo della libreria TorBox</small>
+      <div class="label"><span data-i18n="sortLibLabel">Ordine catalogo LIBRERIA</span>
+        <small data-i18n="sortLibDesc">Come ordinare i titoli nel catalogo della libreria TorBox</small>
       </div>
       <select id="catalog_sort_library">
-        <option value="recent">più recenti prima</option>
-        <option value="oldest">più vecchi prima</option>
-        <option value="biggest">più grandi prima</option>
-        <option value="smallest">più piccoli prima</option>
+        <option value="recent" data-i18n="sortRecent">più recenti prima</option>
+        <option value="oldest" data-i18n="sortOldest">più vecchi prima</option>
+        <option value="biggest" data-i18n="sortBiggest">più grandi prima</option>
+        <option value="smallest" data-i18n="sortSmallest">più piccoli prima</option>
       </select>
     </div>
   </div>
 
   <div class="card">
-    <h2>🎬 Stream nella schermata episodio/film</h2>
-    <p class="sub">Quando apri un titolo, l'addon può mostrare sia i tuoi <b>cast</b> sia la tua <b>libreria TorBox</b> riconosciuta tramite ICVdb (anche file non ancora castati).</p>
+    <h2 data-i18n="streamH2">🎬 Stream nella schermata episodio/film</h2>
+    <p class="sub" id="streamDesc">Quando apri un titolo, l'addon può mostrare sia i tuoi <b>cast</b> sia la tua <b>libreria TorBox</b> riconosciuta tramite ICVdb (anche file non ancora castati).</p>
     <div class="row">
-      <div class="label">Includi anche la libreria TorBox<small>Streams ricavati da TUTTI i torrent del tuo account, anche se non castati</small></div>
+      <div class="label"><span data-i18n="inclLibLabel">Includi anche la libreria TorBox</span><small data-i18n="inclLibDesc">Stream ricavati da TUTTI i torrent del tuo account, anche se non castati</small></div>
       <input type="checkbox" id="include_library_streams">
     </div>
     <div class="row">
-      <div class="label">Ordine sorgenti<small>Quali stream mostrare per primi nella lista</small></div>
+      <div class="label"><span data-i18n="streamOrderLabel">Ordine sorgenti</span><small data-i18n="streamOrderDesc">Quali stream mostrare per primi nella lista</small></div>
       <select id="stream_order">
-        <option value="cast-first">Prima i cast salvati</option>
-        <option value="library-first">Prima la libreria</option>
-        <option value="mixed">Misto (alternati)</option>
+        <option value="cast-first" data-i18n="orderCastFirst">Prima i cast salvati</option>
+        <option value="library-first" data-i18n="orderLibFirst">Prima la libreria</option>
+        <option value="mixed" data-i18n="orderMixed">Misto (alternati)</option>
       </select>
     </div>
     <div class="row">
-      <div class="label">Ordinamento interno<small>Come ordinare gli stream all'interno di ogni gruppo</small></div>
+      <div class="label"><span data-i18n="streamSortLabel">Ordinamento interno</span><small data-i18n="streamSortDesc">Come ordinare gli stream all'interno di ogni gruppo</small></div>
       <select id="stream_sort">
-        <option value="size-desc">Dimensione (più grande prima)</option>
-        <option value="size-asc">Dimensione (più piccolo prima)</option>
-        <option value="quality">Qualità (4K → 480p)</option>
+        <option value="size-desc" data-i18n="sortSzDesc">Dimensione (più grande prima)</option>
+        <option value="size-asc" data-i18n="sortSzAsc">Dimensione (più piccolo prima)</option>
+        <option value="quality" data-i18n="sortQuality">Qualità (4K → 480p)</option>
       </select>
     </div>
     <div class="row">
-      <div class="label">🤝 Compatibilità AIOStreams
-        <small>Formatta nome/titolo nello stile riconosciuto da <b>AIOStreams</b> (<code>TB⚡</code> + righe icona). Disattivalo per il look DMV nativo. Non richiede reinstallazione dell'addon.</small>
+      <div class="label"><span data-i18n="aioLabel">🤝 Compatibilità AIOStreams</span>
+        <small data-i18n-html="aioDesc">Formatta nome/titolo nello stile riconosciuto da <b>AIOStreams</b> (<code>TB⚡</code> + righe icona). Disattivalo per il look DMV nativo. Non richiede reinstallazione dell'addon.</small>
       </div>
       <input type="checkbox" id="aiostreams_mode">
     </div>
   </div>
 
   <div class="actions">
-    <button class="primary" id="btnSave">💾 Salva impostazioni</button>
-    <button class="secondary" id="btnBack">← Indietro</button>
+    <button class="primary" id="btnSave" data-i18n="saveBtn">💾 Salva impostazioni</button>
+    <button class="secondary" id="btnBack" data-i18n="backBtn">← Indietro</button>
   </div>
 </div>
 <div id="toast"></div>
-<script>
-  const $ = (id) => document.getElementById(id);
+  <script>
+    const L = {
+      it: {
+        heading: '⚙️ Impostazioni DMV🟣 Cast', libLink: '🗂️ Libreria', castLink: '📡 Cast', logout: 'Esci',
+        installH2: "📦 Installa l'addon su Stremio",
+        installDesc: 'Hai due varianti: completa (con cataloghi visibili in Home e Scopri) o solo stream (nessun catalogo, nessuna riga nella Home).',
+        fullVersionLabel: 'VERSIONE COMPLETA · con cataloghi', installFull: '⚡ Installa',
+        copyManifest: '📋 Copia manifest', ncVersionLabel: 'VERSIONE NO-CATALOG · solo stream',
+        installNC: '⚡ Installa', copyManifestNC: '📋 Copia manifest',
+        catalogH2: '🏠 Catalogo Stremio',
+        reinstallBanner: '⚠️ <b>Modifica al catalogo rilevata</b> — dopo aver salvato dovrai <b>reinstallare l\\'addon</b> in Stremio.',
+        catModelabel: 'Modalità catalogo',
+        catModeDesc: '<b>full</b> = catalogo visibile in Home e Scopri · <b>off</b> = nessun catalogo',
+        catModeFull: 'full — completo', catModeOff: 'off — nessun catalogo',
+        catSrcLabel: 'Sorgente catalogo',
+        catSrcDesc: '<b>casts</b> = solo cast salvati · <b>library</b> = tutta la libreria TorBox riconosciuta da ICVdb · <b>both-merged</b> = uniti in un solo elenco · <b>both-split</b> = due righe separate "Cast" + "Libreria"',
+        catSrcCasts: 'casts — solo cast', catSrcLib: 'library — solo libreria',
+        catSrcMerged: 'both-merged — uniti', catSrcSplit: 'both-split — sdoppiati',
+        sortCastLabel: 'Ordine catalogo CAST', sortCastDesc: 'Come ordinare i titoli nel catalogo dei cast',
+        sortLibLabel: 'Ordine catalogo LIBRERIA', sortLibDesc: 'Come ordinare i titoli nel catalogo della libreria TorBox',
+        sortRecent: 'più recenti prima', sortOldest: 'più vecchi prima',
+        sortBiggest: 'più grandi prima', sortSmallest: 'più piccoli prima',
+        streamH2: '🎬 Stream nella schermata episodio/film',
+        inclLibLabel: 'Includi anche la libreria TorBox', inclLibDesc: 'Stream ricavati da TUTTI i torrent del tuo account, anche se non castati',
+        streamOrderLabel: 'Ordine sorgenti', streamOrderDesc: 'Quali stream mostrare per primi nella lista',
+        orderCastFirst: 'Prima i cast salvati', orderLibFirst: 'Prima la libreria', orderMixed: 'Misto (alternati)',
+        streamSortLabel: 'Ordinamento interno', streamSortDesc: 'Come ordinare gli stream all\\'interno di ogni gruppo',
+        sortSzDesc: 'Dimensione (più grande prima)', sortSzAsc: 'Dimensione (più piccolo prima)', sortQuality: 'Qualità (4K → 480p)',
+        aioLabel: '🤝 Compatibilità AIOStreams',
+        aioDesc: 'Formatta nome/titolo nello stile riconosciuto da <b>AIOStreams</b> (<code>TB⚡</code> + righe icona). Disattivalo per il look DMV nativo. Non richiede reinstallazione dell\\'addon.',
+        saveBtn: '💾 Salva impostazioni', backBtn: '← Indietro',
+        copied: '✅ Copiato!', copyError: '❌ Errore',
+        loadError: 'Errore', saving: 'Salvataggio…', saveError: 'Errore',
+        saved: "✅ Salvato — reinstalla l'addon se hai cambiato il catalogo",
+        networkError: 'Errore di rete'
+      },
+      en: {
+        heading: '⚙️ DMV🟣 Cast Settings', libLink: '🗂️ Library', castLink: '📡 Cast', logout: 'Logout',
+        installH2: '📦 Install the addon on Stremio',
+        installDesc: 'Two variants: full (with catalogs visible in Home and Discover) or stream only (no catalog, no row in Home).',
+        fullVersionLabel: 'FULL VERSION · with catalogs', installFull: '⚡ Install',
+        copyManifest: '📋 Copy manifest', ncVersionLabel: 'NO-CATALOG VERSION · stream only',
+        installNC: '⚡ Install', copyManifestNC: '📋 Copy manifest',
+        catalogH2: '🏠 Stremio Catalog',
+        reinstallBanner: '⚠️ <b>Catalog change detected</b> — after saving you must <b>reinstall the addon</b> in Stremio.',
+        catModelabel: 'Catalog mode',
+        catModeDesc: '<b>full</b> = catalog visible in Home and Discover · <b>off</b> = no catalog',
+        catModeFull: 'full — complete', catModeOff: 'off — no catalog',
+        catSrcLabel: 'Catalog source',
+        catSrcDesc: '<b>casts</b> = saved casts only · <b>library</b> = entire TorBox library recognized by ICVdb · <b>both-merged</b> = merged into a single list · <b>both-split</b> = two separate rows "Cast" + "Library"',
+        catSrcCasts: 'casts — casts only', catSrcLib: 'library — library only',
+        catSrcMerged: 'both-merged — merged', catSrcSplit: 'both-split — split',
+        sortCastLabel: 'CAST catalog order', sortCastDesc: 'How to order titles in the casts catalog',
+        sortLibLabel: 'LIBRARY catalog order', sortLibDesc: 'How to order titles in the TorBox library catalog',
+        sortRecent: 'most recent first', sortOldest: 'oldest first',
+        sortBiggest: 'largest first', sortSmallest: 'smallest first',
+        streamH2: '🎬 Streams on the episode/movie screen',
+        inclLibLabel: 'Include TorBox library', inclLibDesc: 'Streams from ALL torrents in your account, even uncarted ones',
+        streamOrderLabel: 'Source order', streamOrderDesc: 'Which streams to show first in the list',
+        orderCastFirst: 'Saved casts first', orderLibFirst: 'Library first', orderMixed: 'Mixed (alternating)',
+        streamSortLabel: 'Internal sorting', streamSortDesc: 'How to order streams within each group',
+        sortSzDesc: 'Size (largest first)', sortSzAsc: 'Size (smallest first)', sortQuality: 'Quality (4K → 480p)',
+        aioLabel: '🤝 AIOStreams compatibility',
+        aioDesc: 'Format name/title in the style recognized by <b>AIOStreams</b> (<code>TB⚡</code> + icon rows). Disable for native DMV look. No addon reinstall required.',
+        saveBtn: '💾 Save settings', backBtn: '← Back',
+        copied: '✅ Copied!', copyError: '❌ Error',
+        loadError: 'Error', saving: 'Saving…', saveError: 'Error',
+        saved: '✅ Saved — reinstall the addon if you changed the catalog',
+        networkError: 'Network error'
+      }
+    };
+    var _lang = 'it';
+    try {
+      var stored = localStorage.getItem('icv-lang');
+      if (stored === 'en' || stored === 'eng') _lang = 'en';
+      else if (stored === 'it') _lang = 'it';
+    } catch(e) {}
+    function setLang(l) {
+      if (l === 'eng') l = 'en';
+      if (l !== 'it' && l !== 'en') l = 'it';
+      _lang = l;
+      try { localStorage.setItem('icv-lang', l); } catch(e) {}
+      document.cookie = 'lang=' + l + '; path=/; max-age=31536000; SameSite=Lax';
+      document.querySelectorAll('.lang-btn').forEach(function(b) {
+        var active = b.dataset.lang === l;
+        b.classList.toggle('active', active);
+        if (active) {
+          b.style.background = 'linear-gradient(135deg,#7c3aed,#a855f7)';
+          b.style.color = '#fff';
+          b.style.borderColor = '#a855f7';
+          b.style.boxShadow = '0 0 14px rgba(168,85,247,0.55)';
+        } else {
+          b.style.background = 'rgba(139,92,246,0.10)';
+          b.style.color = '#a78bfa';
+          b.style.borderColor = 'rgba(139,92,246,0.45)';
+          b.style.boxShadow = 'none';
+        }
+      });
+      // textContent elements
+      document.querySelectorAll('[data-i18n]').forEach(function(el) {
+        var k = el.getAttribute('data-i18n'); if (L[l][k] !== undefined) el.textContent = L[l][k];
+      });
+      // innerHTML elements
+      document.querySelectorAll('[data-i18n-html]').forEach(function(el) {
+        var k = el.getAttribute('data-i18n-html'); if (L[l][k] !== undefined) el.innerHTML = L[l][k];
+      });
+      // catalog desc
+      var cd = document.getElementById('catalogDesc');
+      if (cd) cd.innerHTML = l === 'it'
+        ? "Cosa esporre come catalogo nella Home / sezione Scopri di Stremio. <b>Ricorda</b> di reinstallare l'addon dopo aver cambiato il <b>modo</b> o la <b>sorgente</b> (Stremio fa cache del manifest)."
+        : 'What to show as a catalog in Stremio Home / Discover. <b>Remember</b> to reinstall the addon after changing the <b>mode</b> or <b>source</b> (Stremio caches the manifest).';
+      // stream desc
+      var sd = document.getElementById('streamDesc');
+      if (sd) sd.innerHTML = l === 'it'
+        ? "Quando apri un titolo, l'addon può mostrare sia i tuoi <b>cast</b> sia la tua <b>libreria TorBox</b> riconosciuta tramite ICVdb (anche file non ancora castati)."
+        : 'When you open a title, the addon can show both your <b>casts</b> and your <b>TorBox library</b> recognized through ICVdb (even uncarted files).';
+    }
+    setLang(_lang);
+    const $ = (id) => document.getElementById(id);
   const userId = localStorage.getItem('dmvUserId');
   if (!userId) location.href = '/login';
 
@@ -2893,7 +3418,7 @@ function renderSettingsPage() {
   async function load() {
     const r = await fetch('/torbox/' + encodeURIComponent(userId) + '/settings/data');
     const data = await r.json();
-    if (!r.ok) return toast(data.error || 'Errore', 'err');
+    if (!r.ok) return toast(data.error || L[_lang].loadError, 'err');
     const s = data.settings;
     $('catalog_mode').value = s.catalog_mode;
     $('catalog_source').value = s.catalog_source;
@@ -2932,9 +3457,9 @@ function renderSettingsPage() {
             document.execCommand('copy');
             document.body.removeChild(ta);
           }
-          el.textContent = '✅ Copiato!';
+          el.textContent = L[_lang].copied;
         } catch (_) {
-          el.textContent = '❌ Errore';
+          el.textContent = L[_lang].copyError;
         }
         setTimeout(() => { el.textContent = orig; }, 1600);
       };
@@ -2967,19 +3492,19 @@ function renderSettingsPage() {
       stream_sort: $('stream_sort').value,
       aiostreams_mode: $('aiostreams_mode').checked
     };
-    $('btnSave').disabled = true; $('btnSave').textContent = 'Salvataggio…';
+    $('btnSave').disabled = true; $('btnSave').textContent = L[_lang].saving;
     try {
       const r = await fetch('/torbox/' + encodeURIComponent(userId) + '/settings', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
       });
       const data = await r.json();
-      if (!r.ok) return toast(data.error || 'Errore', 'err');
-      toast('✅ Salvato — reinstalla l\\'addon se hai cambiato il catalogo', 'ok');
+      if (!r.ok) return toast(data.error || L[_lang].saveError, 'err');
+      toast(L[_lang].saved, 'ok');
     } catch (e) {
-      toast('Errore di rete', 'err');
+      toast(L[_lang].networkError, 'err');
     } finally {
-      $('btnSave').disabled = false; $('btnSave').textContent = '💾 Salva impostazioni';
+      $('btnSave').disabled = false; $('btnSave').textContent = L[_lang].saveBtn;
     }
   };
 
